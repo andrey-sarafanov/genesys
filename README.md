@@ -1,17 +1,22 @@
-# Genesys Cloud reporting skill guide
+# Genesys Cloud skill library — Miratech
 
-Miratech-branded, navigable HTML documentation for the `genesys-reporting` skill.
+Detailed, self-contained HTML guides for the Genesys-specific skills installed in the reviewed environment.
 
-## Open the guide
+| Guide | Purpose | File |
+|---|---|---|
+| Skill catalogue | Choose a skill and navigate the collection | [catalog.html](catalog.html) |
+| Genesys Reporting | OAuth, Analytics APIs, metrics and pipelines | [index.html](index.html) |
+| CX as Code | Terraform, Architect YAML, IVR, bots and messaging | [genesys-cx-as-code.html](genesys-cx-as-code.html) |
+| Performance Investigator | Selected queue/IVR investigations and offline reports | [genesys-performance-investigator.html](genesys-performance-investigator.html) |
 
-Download `index.html` and open it in a modern browser. The file is self-contained and works offline. GitHub displays HTML source rather than rendering the guide inside the repository viewer.
+## Read the guides
 
-## Contents
+Download the HTML files together and open `catalog.html` in a modern browser. GitHub displays HTML source rather than rendering the guide within its repository viewer. Each detailed guide supports section search, persistent navigation, a mobile contents menu, copyable code and print styling. No build step or external asset request is required.
 
-Overview and capabilities; workflow and usage prompts; OAuth and permissions; Analytics API selection and JSON examples; metric interpretation; extraction and reconciliation; investigation and troubleshooting; source register; full skill contract.
+## Scope and validation
 
-## Features
+Prepared November 6, 2026 from the installed skill instructions, reference documents and helper command interfaces. The two additional domain skills are `genesys-cx-as-code` and `genesys-performance-investigator`; generic BA, architecture and QA skills are not relabelled as Genesys skills.
 
-Search across sections, persistent navigation, mobile contents menu, copyable code examples and print layout. No build step or external asset requests are required.
+Documentation and local checks do not prove live authentication, data completeness or deployment readiness. No live Genesys queries or flow deployments were performed for this collection. Historical provider/schema audits retain their original dates and are not current-version guarantees.
 
-Prepared November 6, 2026. Technical examples were checked locally; live tenant authentication and reporting queries were not performed. The Miratech logo comes from https://miratechgroup.com/.
+Miratech branding uses the logo from https://miratechgroup.com/. Existing reporting guide remains unchanged.
