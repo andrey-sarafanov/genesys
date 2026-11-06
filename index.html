@@ -1,0 +1,991 @@
+<!doctype html><html lang="en" data-register="paper"><head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Genesys Cloud Reporting Skill | Miratech</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cpath d='M18 40V24l14-8 14 8v16l-14 8-14-8Z' fill='none' stroke='%23fbbf24' stroke-width='4' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%2338bdf8'/%3E%3C/svg%3E"><meta name="description" content="Detailed Miratech guide to the Genesys Cloud reporting skill: OAuth, Analytics APIs, metrics, extraction and investigations."><meta charset="utf-8">
+
+
+
+<style data-ve-kit>
+/* visual-explainer kit. The renderer inlines this file at <link rel="stylesheet" data-ve-kit>.
+   Tokens sit in :where(), so a page's own :root rules (topic motif, a named palette) always win.
+   A page picks its register with <html data-register="instrument|blueprint|paper|editorial">; Instrument is the default. */
+
+/* scale, shared by every register */
+:where(:root) {
+  color-scheme: light dark;
+  --t-label: .75rem; --t-small: .875rem; --t-body: 1rem; --t-lead: 1.25rem; --t-h2: 1.625rem; --t-h1: clamp(2.25rem, 5.5vw, 4rem);
+  --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.5rem; --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem;
+  --r-1: 4px; --r-2: 10px;
+  --ease: cubic-bezier(.16,1,.3,1); --fast: 150ms; --med: 300ms; --slow: 500ms;
+}
+
+/* Instrument (default): Geist, near-black and amber; dark first */
+:where(:root) {
+  --bg: #0b0d0c; --surface: #121614; --border: #1f2522; --border-bright: #5e6662;
+  --text: #e6ebe8; --text-dim: #919d97; --accent: #f2a93b; --accent-dim: rgba(242,169,59,.14);
+  --ok: #6fcf97; --warn: #e8c547; --risk: #ef6f5c; --info: #6cb6e0;
+  --node-top: color-mix(in srgb, var(--text) 7%, var(--surface)); --lift: rgb(0 0 0 / .45); --halo: 32%;
+  --font-body: 'Geist', 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-display: var(--font-body); --display-weight: 600;
+  --stage: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--text) 13%, transparent) 1px, transparent 1.5px) 0 0 / 20px 20px;
+}
+@media (prefers-color-scheme: light) {
+  :where(:root) {
+    --bg: #f4f5f3; --surface: #ffffff; --border: #dfe3e0; --border-bright: #888e8b;
+    --text: #121614; --text-dim: #545e59; --accent: #955700; --accent-dim: rgba(149,87,0,.12);
+    --ok: #1c7443; --warn: #7a5e00; --risk: #b0341e; --info: #1a6890;
+    --node-top: var(--surface); --lift: rgb(18 22 20 / .12); --halo: 22%;
+  }
+}
+
+/* Blueprint: IBM Plex, blue-black, a 24px line grid on the stage, r-1 everywhere; dark first */
+:where(:root[data-register="blueprint"]) {
+  --bg: #0d1520; --surface: #132031; --border: #22324a; --border-bright: #596b87;
+  --text: #e3ecf5; --text-dim: #92a6bb; --accent: #ffb547; --accent-dim: rgba(255,181,71,.14);
+  --ok: #6fd3a0; --warn: #e8d36a; --risk: #ff7b6b; --info: #7cc0f0;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --r-2: 4px;
+  --stage: linear-gradient(color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px) 0 0 / 24px 24px;
+}
+@media (prefers-color-scheme: light) {
+  :where(:root[data-register="blueprint"]) {
+    --bg: #f2f6fa; --surface: #ffffff; --border: #d6e0ea; --border-bright: #818f9e;
+    --text: #0f1a26; --text-dim: #4d6074; --accent: #a34700; --accent-dim: rgba(163,71,0,.12);
+    --ok: #1c7443; --warn: #776300; --risk: #b0341e; --info: #145f99;
+  }
+}
+
+/* Paper: Newsreader headings over Atkinson Hyperlegible, ink blue; light first */
+:where(:root[data-register="paper"]) {
+  --bg: #f7f7f4; --surface: #ffffff; --border: #e3e3dc; --border-bright: #8e8e8a;
+  --text: #17191c; --text-dim: #575c63; --accent: #2c4cd0; --accent-dim: rgba(44,76,208,.12);
+  --ok: #1d7443; --warn: #836000; --risk: #b3301d; --info: #1b6a94;
+  --node-top: var(--surface); --lift: rgb(18 22 20 / .12); --halo: 22%;
+  --font-body: 'Atkinson Hyperlegible Next', 'Segoe UI', sans-serif;
+  --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
+  --font-display: 'Newsreader', Georgia, serif; --display-weight: 500;
+}
+@media (prefers-color-scheme: dark) {
+  :where(:root[data-register="paper"]) {
+    --bg: #111316; --surface: #181b1f; --border: #262a30; --border-bright: #62676c;
+    --text: #e8e8e3; --text-dim: #9ba1a9; --accent: #93a6ff; --accent-dim: rgba(147,166,255,.14);
+    --ok: #6cc492; --warn: #e3b94d; --risk: #f0806b; --info: #6fb8dc;
+    --node-top: color-mix(in srgb, var(--text) 7%, var(--surface)); --lift: rgb(0 0 0 / .45); --halo: 32%;
+  }
+}
+
+/* Editorial: Instrument Serif display over Instrument Sans; light first */
+:where(:root[data-register="editorial"]) {
+  --bg: #fbfbf9; --surface: #f1f0ec; --border: #e2e0da; --border-bright: #8c8a85;
+  --text: #111111; --text-dim: #5a5853; --accent: #cc3418; --accent-dim: rgba(204,52,24,.12);
+  --ok: #1d7443; --warn: #836000; --risk: #a01d48; --info: #1b6a94;
+  --node-top: var(--surface); --lift: rgb(18 22 20 / .12); --halo: 22%;
+  --font-body: 'Instrument Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', Georgia, serif; --display-weight: 400;
+}
+@media (prefers-color-scheme: dark) {
+  :where(:root[data-register="editorial"]) {
+    --bg: #0f0f0f; --surface: #1a1a19; --border: #2b2a28; --border-bright: #696763;
+    --text: #f2f0eb; --text-dim: #a4a19b; --accent: #ff6e50; --accent-dim: rgba(255,110,80,.14);
+    --ok: #6cc492; --warn: #e3b94d; --risk: #f57fa2; --info: #7cb8e8;
+    --node-top: color-mix(in srgb, var(--text) 7%, var(--surface)); --lift: rgb(0 0 0 / .45); --halo: 32%;
+  }
+}
+
+/* base */
+html { font-size: 17px; }
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 400 var(--t-body)/1.6 var(--font-body); text-wrap: pretty; font-kerning: normal; font-synthesis: none; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--accent-dim); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+main { max-width: 64rem; margin: 0 auto; padding: var(--s-8) var(--s-5); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-8); }
+section, figure, header { min-width: 0; }
+header { display: grid; gap: var(--s-4); }
+header + figure { margin-top: calc(var(--s-6) - var(--s-8)); }
+/* text-box trims to cap height and baseline, so gaps are measured from the letters, not the line box */
+h1, h2, .kpi .val { text-box: trim-both cap alphabetic; }
+h1 { font-size: var(--t-h1); line-height: 1.05; font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: -.035em; text-wrap: balance; max-width: 16ch; margin-bottom: var(--s-2); }
+h1 .num { color: var(--accent); font-variant-numeric: tabular-nums; }
+h2 { font-size: var(--t-h2); line-height: 1.2; font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: -.015em; text-wrap: balance; }
+/* section opener: hairline, mono label in columns 1–3, h2 in 4–12, on one baseline */
+.sec-head { display: grid; gap: var(--s-3) var(--s-5); align-items: baseline; border-top: 1px solid var(--border); padding-top: var(--s-5); margin-bottom: var(--s-6); }
+@media (min-width: 52rem) { .sec-head { grid-template-columns: 3fr 9fr; } }
+/* the other opener, a bare label above the h2, gets the same gaps, so the h2 never sits on the figure below */
+section > .ve-label:has(+ h2) { margin-bottom: var(--s-3); }
+section > h2 { margin-bottom: var(--s-6); }
+h3 { font-size: var(--t-body); line-height: 1.3; font-weight: 600; }
+.eyebrow { display: flex; align-items: center; gap: var(--s-2); font: 600 var(--t-label) var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.eyebrow::before { content: ''; width: 1.25rem; height: 2px; background: currentColor; }
+.ve-label { font: 500 var(--t-label) var(--font-mono); color: var(--text-dim); }
+.caps { text-transform: uppercase; letter-spacing: .08em; font-weight: 600; color: var(--text); }
+.lead { font-size: var(--t-lead); line-height: 1.5; color: var(--text-dim); max-width: 44ch; }
+.lead b { color: var(--text); font-weight: 600; }
+.meta { font: 500 var(--t-label) var(--font-mono); color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.unit { font-size: .5em; font-weight: 500; color: var(--text-dim); letter-spacing: 0; }
+code { font: .875em var(--font-mono); font-variant-ligatures: none; }
+
+/* figure: the stage is a faint dot grid, so nodes read as objects placed on it */
+.frame { background: var(--stage), var(--bg); border: 1px solid var(--border); border-radius: var(--r-2); padding: var(--s-5); overflow-x: auto; }
+figcaption { font-size: var(--t-body); color: var(--text-dim); margin-top: var(--s-3); max-width: 65ch; }
+.fig-n { font: 600 var(--t-label) var(--font-mono); color: var(--text); margin-right: var(--s-2); }
+
+/* diagram kit (references/diagrams.md) */
+/* min-width keeps 14-unit labels >= 12px as rendered; narrow screens scroll the frame instead. kit/render.mjs sets --ve-min for a viewBox wider than 816. */
+.ve-svg { width: 100%; min-width: var(--ve-min, 700px); height: auto; display: block; font: 500 17px var(--font-body); }
+.ve-n .sh { fill: url(#ve-node); stroke: var(--border-bright); stroke-width: 1.5; filter: drop-shadow(0 6px 14px var(--lift)); transition: stroke var(--fast) var(--ease), opacity var(--med) var(--ease); }
+.ve-n .lid { fill: var(--node-top); }
+.ve-n.is-key .sh { fill: color-mix(in srgb, var(--accent) 11%, var(--surface)); stroke: var(--accent); stroke-width: 2; filter: drop-shadow(0 0 16px color-mix(in srgb, var(--accent) var(--halo), transparent)); }
+.ve-n text { fill: var(--text); text-anchor: middle; dominant-baseline: central; font-weight: 600; }
+.ve-n .sub { fill: var(--text-dim); font: 500 14px var(--font-mono); }
+.ve-n .gl { fill: none; stroke: var(--text-dim); stroke-width: 1.5; stroke-linejoin: round; }
+.ve-n .ve-kind { fill: var(--text-dim); font: 600 14px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+.ve-n.is-key .gl { stroke: var(--accent); }
+.ve-e { fill: none; stroke: var(--text-dim); stroke-width: 1.75; marker-end: url(#ve-ah); }
+.ve-e.is-hot { stroke: var(--accent); stroke-width: 2.75; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 55%, transparent)); }
+.ve-e.is-async { stroke-dasharray: 6 5; }
+.ve-el { fill: var(--text-dim); font: 500 14px var(--font-mono); text-anchor: middle; paint-order: stroke; stroke: var(--bg); stroke-width: 5px; stroke-linejoin: round; }
+.ve-el.l { text-anchor: end; } .ve-el.r { text-anchor: start; }
+/* a dashed boundary around a group, with a mono tag in its corner */
+.ve-bnd { fill: none; stroke: var(--border-bright); stroke-width: 1; stroke-dasharray: 6 5; }
+.ve-bnd-t { fill: var(--text-dim); font: 600 14px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+/* a slot in a queue or worker pool; .is-on fills it (.on is the stepper's) */
+.ve-slot { fill: var(--surface); stroke: var(--border-bright); stroke-width: 1.25; }
+.ve-slot.is-on { fill: var(--accent-dim); stroke: var(--accent); stroke-width: 1.75; }
+/* chart axes and ticks, and their labels */
+.ve-axis { fill: none; stroke: var(--border-bright); stroke-width: 1; }
+.ve-axis-t { fill: var(--text-dim); font: 500 14px var(--font-mono); text-anchor: middle; font-variant-numeric: tabular-nums; }
+/* <ve-flow> on a page: its labels stay at 12 px or more, and a small drawing grows no more than 1.3× (kit/flow.mjs sets both) */
+.ve-svg.ve-flow { min-width: var(--min); max-width: var(--max); }
+/* flags on <ve-flow> parts: new, gone (an arrow also gets ✕) */
+.ve-n.is-new .sh { stroke: var(--ok); stroke-dasharray: 6 4; }
+.ve-n.is-gone .sh { stroke: var(--risk); stroke-dasharray: 3 4; opacity: .7; }
+.ve-n.is-gone text { text-decoration: line-through; }
+.ve-e.is-new { stroke: var(--ok); }
+.ve-e.is-gone { stroke: var(--risk); stroke-dasharray: 3 4; }
+.ve-x { fill: var(--risk); font: 600 16px var(--font-mono); text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: var(--surface); stroke-width: 5px; }
+/* <ve-stack>: one bar split in proportion; labels under their segments */
+.ve-stack rect { fill: color-mix(in srgb, var(--text) 9%, var(--surface)); stroke: var(--border-bright); stroke-width: 1.5; }
+.ve-stack rect.hot { fill: var(--accent-dim); stroke: var(--accent); }
+.ve-stack text { fill: var(--text-dim); font: 500 14px var(--font-mono); text-anchor: middle; dominant-baseline: central; }
+
+/* numbered callouts and edge numbers (references/diagrams.md): .now fills the current one; .q keeps an edge number quiet until its step */
+.ve-co circle { fill: var(--surface); stroke: var(--accent); stroke-width: 1.75; }
+.ve-co text { fill: var(--accent); font: 600 14px var(--font-mono); text-anchor: middle; dominant-baseline: central; }
+.ve-co.now circle { fill: var(--accent); } .ve-co.now text { fill: var(--surface); }
+.ve-co.q circle { stroke: var(--border-bright); } .ve-co.q text { fill: var(--text-dim); }
+.ve-co.q.now circle { fill: var(--accent); stroke: var(--accent); } .ve-co.q.now text { fill: var(--surface); }
+
+/* dimension lines (references/diagrams.md) */
+.ve-dim path { fill: none; stroke-width: 1; } .ve-dim .ext { stroke: var(--border-bright); } .ve-dim .ln { stroke: var(--text-dim); }
+.ve-dim text { fill: var(--text); font: 500 14px var(--font-mono); text-anchor: middle; }
+.ve-dim.is-key .ln { stroke: var(--accent); } .ve-dim.is-key text { fill: var(--accent); }
+
+/* flow dots: they travel under the nodes, so a dot enters a box and leaves from the far side */
+[data-flow] { fill: none; stroke: none; }
+.ve-dots circle { fill: var(--text); }
+.ve-dots .hit { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
+.ve-steps:not(.is-full) .ve-dots { display: none; }
+
+/* linked highlighting: same data-ref lights up together */
+/* Dim shapes, never text below 4.5:1: unlit labels drop to --text-dim instead of fading. */
+.ve-ref { text-decoration: underline dotted var(--text-dim) 1px; text-underline-offset: .22em; border-radius: var(--r-1); transition: background var(--fast) var(--ease); }
+.ve-ref.is-lit { background: var(--accent-dim); text-decoration-color: var(--accent); }
+svg [data-ref] { transition: opacity var(--med) var(--ease); }
+svg.has-lit path[data-ref]:not(.is-lit), svg.has-lit g[data-ref]:not(.is-lit) .sh { opacity: .25; }
+svg.has-lit g[data-ref]:not(.is-lit) text, svg.has-lit text[data-ref]:not(.is-lit) { fill: var(--text-dim); }
+.ve-n.is-lit .sh { stroke: var(--accent); }
+.ve-e.is-lit { stroke: var(--accent); }
+.ve-el.is-lit { fill: var(--text); }
+.case.is-lit { border-color: var(--accent); }
+
+/* stepper / scene player */
+/* Future steps: shapes stay as a faint outline; their labels are hidden, not faded to an unreadable gray. */
+.ve-steps [data-s] { transition: opacity var(--slow) var(--ease), stroke-dashoffset var(--slow) var(--ease); }
+.ve-steps [data-s]:not(.on) { opacity: .15; }
+.ve-steps g[data-s]:not(.on) text, .ve-steps text[data-s]:not(.on) { opacity: 0; }
+.ve-steps path[pathLength][data-s] { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ve-steps path[pathLength][data-s].on { stroke-dashoffset: 0; }
+.ve-steps .ve-n.now > .sh { stroke: var(--accent); }
+/* replay: the edges that fired light until the full picture, and each token runs its path once, after --d; edges and nodes still show the step without tokens */
+.ve-steps:not(.is-full) .ve-e.now { stroke: var(--accent); stroke-width: 2.75; }
+.ve-tok { fill: var(--accent); visibility: hidden; }
+.ve-steps:not(.is-still) .ve-tok.now { visibility: visible; animation: ve-run var(--dur, 900ms) ease-in-out var(--d, 0ms) both; }
+@keyframes ve-run { from { offset-distance: 0%; opacity: 0; } 10%, 75% { opacity: 1; } to { offset-distance: 100%; opacity: 0; } }
+/* a part that comes and goes (a queued job, a busy slot): shown only on the steps its data-s lists, arriving after --d */
+.ve-steps .ve-at { transition: opacity var(--med) var(--ease); }
+.ve-steps .ve-at:not(.now) { opacity: 0; }
+.ve-steps .ve-at.now { transition-delay: var(--d, 0ms); }
+/* a changing value: one text per step at one spot; the latest step's shows, swapped without a crossfade */
+.ve-steps .ve-vals text { transition: none; }
+.ve-vals text.on:has(~ text.on) { opacity: 0; }
+.ve-player { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: var(--s-2) var(--s-3); margin-top: var(--s-4); }
+.ve-cap { grid-column: 1 / -1; list-style: none; padding: 0; min-height: 3.2em; }
+.ve-cap li::before { content: attr(data-n); font: 600 var(--t-label) var(--font-mono); color: var(--accent); margin-right: var(--s-3); font-variant-numeric: tabular-nums; }
+.ve-player input { accent-color: var(--accent); min-width: 0; }
+button { font: 500 var(--t-small) var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border-bright); border-radius: var(--r-1); padding: var(--s-2) var(--s-3); cursor: pointer; transition: border-color var(--fast) var(--ease); }
+button:hover, button:focus-visible { border-color: var(--accent); }
+
+/* KPI strip: one frame, cells split by hairlines, each number with its picture. Flex, so a wrapped last row stretches instead of leaving an empty gray cell. */
+.kpis { display: flex; flex-wrap: wrap; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r-2); overflow: hidden; }
+.kpi { flex: 1 1 14rem; background: var(--surface); padding: var(--s-5); display: grid; grid-template-rows: auto auto 1fr; gap: var(--s-3); min-width: 0; }
+.kpi .val { font: 600 2.75rem/1 var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
+.ve-waffle { align-self: end; width: 11rem; height: auto; font: 500 13px var(--font-mono); overflow: visible; }
+.ve-waffle text { fill: var(--text-dim); dominant-baseline: central; }
+.ann { fill: none; stroke: var(--text-dim); stroke-width: 1; }
+.ve-bars { align-self: end; width: 100%; max-width: 16rem; height: auto; font: 500 13px var(--font-mono); overflow: visible; }
+.ve-bars text { fill: var(--text-dim); dominant-baseline: central; }
+.ve-bars rect { fill: var(--border-bright); transform-box: fill-box; transform-origin: left; transition: transform 900ms var(--ease) 150ms; }
+.ve-bars .hot { fill: var(--accent); }
+.ve-bars .hot + text { fill: var(--text); }
+
+/* small multiples: one mini diagram per case; the changed part takes the case's status color */
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(14.5rem, 1fr)); gap: var(--s-4); }
+.case { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2); padding: var(--s-4); display: grid; gap: var(--s-3); align-content: start; transition: border-color var(--fast) var(--ease); }
+.case[data-st=ok] { --st: var(--ok); } .case[data-st=warn] { --st: var(--warn); } .case[data-st=risk] { --st: var(--risk); }
+.ve-mini { width: 100%; height: auto; font: 600 15px var(--font-body); }
+.ve-mini .ve-n .sh { filter: none; }
+/* a .cases column is never under 14.5rem, so a mini is ≥ 211 px and 14 units render ≥ 12.3 px */
+.ve-mini .ve-n .sub { font-size: 14px; }
+.ve-mini .is-st.ve-e { stroke: var(--st); stroke-width: 2.75; }
+.ve-mini .is-st .sh { stroke: var(--st); stroke-width: 2; }
+.ve-mini .is-st .sub { fill: var(--st); }
+.ve-mini .is-off { stroke-dasharray: 5 4; }
+.ve-mini .ve-e.is-off { opacity: .35; }
+
+/* chips */
+.chip { display: inline-flex; align-items: center; gap: var(--s-2); font: 600 var(--t-label) var(--font-mono); padding: 2px var(--s-2); border: 1px solid currentColor; border-radius: var(--r-1); white-space: nowrap; justify-self: start; }
+.chip::before { content: ''; width: .5rem; height: .5rem; background: currentColor; }
+.chip.ok { color: var(--ok); } .chip.ok::before { border-radius: 50%; }
+.chip.warn { color: var(--warn); } .chip.warn::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.chip.risk { color: var(--risk); }
+
+/* a table: a scroll frame, the header in the label style, row rules only; .num cells are right-aligned numbers */
+.ve-table { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-2); }
+.ve-table table { border-collapse: collapse; width: 100%; font-size: var(--t-body); font-variant-numeric: tabular-nums; }
+.ve-table th, .ve-table td { padding: var(--s-3) var(--s-4); text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+.ve-table thead th { background: var(--surface); font: 600 var(--t-label)/1.3 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.ve-table tbody th { font-weight: 600; }
+.ve-table tbody tr:last-child > * { border-bottom: 0; }
+.ve-table .num { text-align: right; font-family: var(--font-mono); }
+.ve-table td small { display: block; color: var(--text-dim); font-size: var(--t-small); }
+
+details { border-top: 1px solid var(--border); padding-top: var(--s-4); color: var(--text-dim); font-size: var(--t-body); }
+summary { cursor: pointer; font: 500 var(--t-label) var(--font-mono); margin-bottom: var(--s-2); }
+/* sources stay visible: readers check them without hunting for a toggle */
+.sources { border-top: 1px solid var(--border); padding-top: var(--s-4); display: grid; gap: var(--s-2); }
+
+/* entrance: blocks rise in once; bars grow as their block arrives (JS adds .js-motion only when motion is allowed) */
+.js-motion main > * { transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); }
+.js-motion main > :not(.in) { opacity: 0; transform: translateY(1rem); }
+.js-motion main > :not(.in) .ve-bars rect { transform: scaleX(0); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } .ve-tok { display: none; } }
+
+@media print {
+  /* Print uses the register's light foregrounds on white, every step fully drawn, and no effects. */
+  :where(:root) { --bg: #fff; --surface: #fff; --border: #dfe3e0; --border-bright: #888e8b; --text: #121614; --text-dim: #545e59; --accent: #955700; --ok: #1c7443; --warn: #7a5e00; --risk: #b0341e; --info: #1a6890; --node-top: #fff; }
+  :where(:root[data-register="blueprint"]) { --border: #d6e0ea; --border-bright: #818f9e; --text: #0f1a26; --text-dim: #4d6074; --accent: #a34700; --warn: #776300; --info: #145f99; }
+  :where(:root[data-register="paper"]) { --border: #e3e3dc; --border-bright: #8e8e8a; --text: #17191c; --text-dim: #575c63; --accent: #2c4cd0; --ok: #1d7443; --warn: #836000; --risk: #b3301d; --info: #1b6a94; }
+  :where(:root[data-register="editorial"]) { --border: #e2e0da; --border-bright: #8c8a85; --text: #111111; --text-dim: #5a5853; --accent: #cc3418; --ok: #1d7443; --warn: #836000; --risk: #a01d48; --info: #1b6a94; }
+  .ve-player button, .ve-player input, .ve-dots { display: none; }
+  .frame { overflow: visible; background: #fff; } .ve-svg, .ve-svg.ve-flow { min-width: 0; }
+  .frame, .case, .kpi { break-inside: avoid; } h2 { break-after: avoid; }
+  svg * { filter: none !important; }
+  .js-motion main > * { opacity: 1 !important; transform: none !important; }
+  .js-motion .ve-bars rect { transform: none !important; }
+  .ve-steps [data-s]:not(.on), .ve-steps g[data-s]:not(.on) text, .ve-steps text[data-s]:not(.on) { opacity: 1; }
+  .ve-steps .ve-at:not(.now) { opacity: 0; }
+  .ve-steps path[pathLength][data-s] { stroke-dashoffset: 0; }
+  .ve-tok, .ve-vals text:not(:last-child) { display: none; }
+}
+</style><style>
+:root{--brand:#183c82;--brand-dark:#102950;--brand-orange:#fd531e;--accent:#183c82;--bg:#fff;--text:#172b49;--text-dim:#526277;--surface:#f3f6fa;--border:#d9e0e9;--font-body:"Segoe UI",Calibri,sans-serif;--font-head:"Segoe UI",Calibri,sans-serif;--r-1:4px;--r-2:6px;color-scheme:light}
+*{box-sizing:border-box}html{scroll-padding-top:110px;scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--text);font-family:"Segoe UI",Calibri,sans-serif;font-size:16px;line-height:1.7}h1,h2,h3,h4{font-family:"Segoe UI",Calibri,sans-serif;color:var(--brand-dark);line-height:1.2;letter-spacing:-.025em}h1{font-size:clamp(36px,4.3vw,62px);max-width:18ch;margin:20px 0}h2{font-size:clamp(28px,3vw,38px);margin:9px 0 27px}h3{font-size:22px;margin:38px 0 13px}h4{font-size:19px;margin-top:30px}p,li{max-width:78ch}p{margin:0 0 18px}a{color:var(--brand);text-underline-offset:4px}button,input{font:inherit}button{cursor:pointer}button,a,input{outline-offset:5px}button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--brand-orange)}.skip{position:fixed;left:20px;top:-100px;background:#fff;padding:12px;z-index:30}.skip:focus{top:10px}.topbar{height:84px;position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 38px;border-bottom:4px solid var(--brand-orange)}.brand{display:flex;align-items:center;gap:30px;color:#fff;text-decoration:none}.brand svg{width:207px;height:24px}.brand-note{font-size:13px;letter-spacing:.1em;text-transform:uppercase;border-left:1px solid #7890ba;padding-left:25px}.top-actions{display:flex;align-items:center;gap:12px}.top-actions button{border:1px solid #8aa1c7;color:#fff;background:transparent;padding:8px 15px;border-radius:4px}.menu-button{display:none}.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1600px;margin:auto}.sidebar{position:sticky;top:84px;height:calc(100vh - 84px);overflow-y:auto;padding:32px 24px;border-right:1px solid var(--border);background:#f7f9fc}.sidebar label{font-size:12px;text-transform:uppercase;letter-spacing:.1em;display:block;color:var(--text-dim);font-weight:700}.sidebar input{width:100%;border:1px solid #96a4b8;background:#fff;padding:11px 10px;margin:9px 0;border-radius:4px}.search-help{font-size:12px;color:var(--text-dim);margin-bottom:20px}.sidebar nav{display:flex;flex-direction:column;gap:3px}.nav-link{font-size:14px;text-decoration:none;padding:9px 12px;min-height:42px;border-radius:4px;color:#43526a}.nav-link:hover{background:#e8eef7}.nav-link[aria-current]{background:#e3ebf9;color:#123b80;font-weight:700;box-shadow:inset 3px 0 0 var(--brand-orange)}.side-footer{font-size:12px;margin-top:26px;padding-top:18px;border-top:1px solid var(--border);color:var(--text-dim)}main{min-width:0;max-width:1120px;margin:0 auto;padding:50px 55px 70px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin:0 0 12px}.lead{font-size:20px;line-height:1.65;max-width:65ch;color:#3e536e}.version-line{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}.pill{padding:4px 11px;border:1px solid var(--border);font-size:12px;border-radius:3px;background:#f5f8fc}.intro-figure{margin:34px 0}.mechanism{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--brand-dark);color:#fff}.mechanism div{padding:22px 18px;border-right:1px solid #536881;position:relative}.mechanism div:last-child{border:0}.mechanism b{display:block;color:#fff;font-size:18px;margin-bottom:7px}.mechanism span{display:block;font-size:13px;color:#c9d7eb;line-height:1.6}.mechanism small{color:#ffac93;font-size:11px;letter-spacing:.07em;text-transform:uppercase;display:block;margin-top:13px}figcaption{font-size:13px;color:var(--text-dim);margin-top:12px}.overview-note{font-size:14px;border-top:1px solid var(--border);padding-top:18px}.doc-section{border-top:1px solid var(--border);margin-top:65px;padding-top:45px;scroll-margin-top:105px}.section-intro{font-size:19px;line-height:1.7;color:#3e536e}.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}.cap-grid article{padding:5px 0 14px;border-bottom:1px solid var(--border)}.cap-grid article h3{font-size:21px;margin-top:22px}.cap-grid article p{font-size:15px}.note{background:#edf3fb;padding:23px 25px;margin:26px 0;border-radius:4px}.note p{margin:8px 0 0}.workflow-list{padding-left:25px}.workflow-list li{padding-left:7px;margin:15px 0}.prompt{background:var(--surface);padding:22px 25px;margin:18px 0;border:1px solid var(--border);border-radius:4px}.prompt p{margin:8px 0 0}code{font-family:Consolas,"Cascadia Code",monospace;font-size:.86em;background:#edf1f6;padding:2px 5px;overflow-wrap:anywhere;border-radius:3px;color:#193b70}.code-wrap{margin:24px 0;background:#10233d;border-radius:5px;overflow:hidden}.code-head{display:flex;justify-content:space-between;align-items:center;background:#1c3352;color:#cbd8e9;font-size:12px;padding:9px 15px;gap:12px}.copy-code{font-size:12px;color:#fff;background:#314f74;border:1px solid #7289a6;padding:5px 11px;border-radius:3px}pre{max-width:100%;margin:0;padding:21px;overflow:auto;background:transparent;color:#e6eef9;line-height:1.6;font-size:13px}pre code{background:transparent;color:inherit;font-size:inherit;padding:0;white-space:pre;overflow-wrap:normal}.table-scroll{overflow-x:auto;margin:25px 0;border:1px solid var(--border);border-radius:4px}table{border-collapse:collapse;width:100%;font-size:14px;text-align:left;font-variant-numeric:tabular-nums}th{background:#eaf0f8;color:#19365f;font-weight:700}th,td{padding:13px 15px;border-bottom:1px solid var(--border);vertical-align:top;min-width:150px}td:first-child{font-weight:600}tr:last-child td{border-bottom:0}td code{font-size:12px}ul,ol{padding-left:25px}li{margin-bottom:10px}.empty{padding:35px;background:#f3f6fa;border:1px solid var(--border)}.page-footer{margin-top:65px;padding-top:24px;border-top:2px solid var(--brand);font-size:13px;color:var(--text-dim)}.back-top{position:fixed;bottom:22px;right:23px;background:var(--brand);color:#fff;border:1px solid #a9b9ce;padding:10px 14px;border-radius:4px;text-decoration:none;font-size:12px}.doc-section[hidden]{display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:1550px){main{padding-right:85px;padding-left:75px}}@media(max-width:1050px){main{padding:35px 32px}.layout{grid-template-columns:235px minmax(0,1fr)}.sidebar{padding:28px 18px}.brand-note{display:none}.mechanism{grid-template-columns:1fr 1fr}.mechanism div:nth-child(2){border-right:0}.mechanism div:nth-child(-n+2){border-bottom:1px solid #536881}}
+@media(max-width:760px){.topbar{height:72px;padding:0 18px}.brand svg{width:165px;height:auto}.menu-button{display:inline-block}.print-button{display:none}.layout{display:block}.sidebar{display:none;position:fixed;z-index:19;top:72px;left:0;height:calc(100vh - 72px);width:min(320px,88vw);box-shadow:8px 0 25px #10295030}.sidebar.open{display:block}main{padding:30px 22px 65px}h1{font-size:39px}.lead{font-size:18px}.cap-grid{grid-template-columns:1fr}.doc-section{margin-top:45px;padding-top:32px}.mechanism div{padding:17px 14px}.mechanism b{font-size:16px}.top-actions button{padding:7px 10px;font-size:13px}.back-top{bottom:12px;right:12px}.brand{gap:0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}@media print{.topbar{position:static;background:#183c82!important;print-color-adjust:exact}.sidebar,.top-actions,.back-top,.copy-code{display:none!important}.layout{display:block}main{max-width:none;padding:25px 0}.doc-section[hidden]{display:block}.doc-section{margin-top:30px;padding-top:25px}h2,h3{break-after:avoid}.code-wrap,.table-scroll{break-inside:avoid}pre{white-space:pre-wrap}pre code{white-space:pre-wrap;overflow-wrap:anywhere}.page-footer{margin-top:25px}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ve-ah" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker>
+    <linearGradient id="ve-node" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--node-top)"/><stop offset="1" style="stop-color:var(--surface)"/></linearGradient>
+    <pattern id="ve-w-on" width="10" height="10" patternUnits="userSpaceOnUse"><rect x="1" y="1" width="8" height="8" rx="1.5" style="fill:var(--accent)"/></pattern>
+    <pattern id="ve-w-off" width="10" height="10" patternUnits="userSpaceOnUse"><rect x="1.5" y="1.5" width="7" height="7" rx="1.5" style="fill:none;stroke:var(--text-dim)"/></pattern>
+  </defs>
+</svg><a class="skip" href="#main-content">Skip to content</a><header class="topbar"><a class="brand" href="#overview" aria-label="Miratech — guide overview"><svg role="img" aria-label="Miratech" width="207px" height="24px" viewBox="0 0 207 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<defs>
+						<polygon id="brand-path-1" points="0 24 207 24 207 0 0 0"></polygon>
+					</defs>
+					<g id="brand-Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+						<g id="brand-Main-Menu" transform="translate(-135.000000, -53.000000)">
+							<g id="brand-logo">
+								<g transform="translate(135.000000, 53.000000)">
+									<path d="M70.4482878,7 C73.6108119,7 76,9.24190641 76,14.2062153 L76,24 L71.0202599,24 L71.0202599,14.9551518 C71.0202599,12.5416396 70.246924,11.1479559 68.5964817,11.1479559 C67.420418,11.1479559 66.5791372,11.9618574 66.2443544,12.9485904 C66.1072293,13.3236715 66.0405198,13.8691326 66.0405198,14.2748576 L66.0405198,24 L61.0607798,24 L61.0607798,14.6830341 C61.0607798,12.574735 60.3195632,11.1479559 58.7061817,11.1479559 C57.3954638,11.1479559 56.6196571,12.1665585 56.318229,13.0172327 C56.1477492,13.4254092 56.1156298,13.9010022 56.1156298,14.3104045 L56.1156298,24 L51.133419,24 L51.133419,12.6776985 C51.133419,10.6037205 51.0691802,8.8337299 51,7.37385536 L55.3064684,7.37385536 L55.5436577,9.61698753 L55.6437219,9.61698753 C56.3503484,8.56283798 57.7981914,7 60.6222266,7 C62.7433414,7 64.4246677,8.08724493 65.1325295,9.82168866 L65.199239,9.82168866 C65.8045659,8.97101449 66.5445471,8.29072031 67.3191184,7.81512726 C68.2283441,7.27089192 69.2363987,7 70.4482878,7 Z" id="brand-Fill-1" fill="#FFFFFF"></path>
+									<mask id="brand-mask-2" fill="white">
+										<use xlink:href="#brand-path-1"></use>
+									</mask>
+									<g id="brand-Clip-4"></g>
+									<polygon id="brand-Fill-3" fill="#FFFFFF" mask="url(#brand-mask-2)" points="83 24 88 24 88 7 83 7"></polygon>
+									<path d="M100.606932,10.4333405 L100.474097,10.4333405 L100.309866,7.37385536 L96,7.37385536 C96.0676247,8.80063451 96.1328342,10.4002452 96.1328342,12.8468527 L96.1328342,24 L101.131023,24 L101.131023,15.5680294 C101.131023,15.1598529 101.164835,14.7504506 101.231252,14.4109164 C101.560923,12.8137573 102.809564,11.7939289 104.651129,11.7939289 C105.209033,11.7939289 105.637725,11.8613454 106,11.928762 L106,7.06741654 C105.637725,7 105.408284,7 104.948195,7 C103.403695,7 101.428088,8.01982839 100.606932,10.4333405" id="brand-Fill-5" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path d="M121.145532,17.7120988 C121.145532,18.0107231 121.114488,18.3105467 121.052398,18.5767901 C120.737352,19.6081834 119.768068,20.4392945 118.578022,20.4392945 C117.514455,20.4392945 116.698095,19.8072663 116.698095,18.5096296 C116.698095,16.5463845 118.641261,15.9155556 121.145532,15.9479365 L121.145532,17.7120988 Z M125.779238,19.6753439 L125.779238,14.0194709 C125.779238,10.192522 124.153417,7 119.047142,7 C116.26117,7 114.161629,7.79753086 113.098062,8.42955908 L113.975361,11.6892416 C114.97684,11.0236332 116.634855,10.4575661 118.203187,10.4575661 C120.549934,10.4575661 120.990309,11.6892416 120.990309,12.5551323 L120.990309,12.7877954 C115.572438,12.7530159 112,14.7834215 112,19.0073369 C112,21.6026102 113.850033,24 116.949901,24 C118.76774,24 120.332622,23.3008113 121.33295,22.0031746 L121.428384,22.0031746 L121.710085,23.6330159 L126,23.6330159 C125.843627,22.7359436 125.779238,21.2380247 125.779238,19.6753439 L125.779238,19.6753439 Z" id="brand-Fill-6" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path d="M144,11.2822408 L144,7.60256121 L140.624233,7.60256121 L140.624233,3 L136.011821,4.11835722 L136.011821,7.60256121 L134,7.60256121 L134,11.2822408 L136.011821,11.2822408 L136.011821,17.8561435 C136.011821,20.1224755 136.444874,21.6649554 137.312116,22.619824 C138.055467,23.4420061 139.323937,24 140.842464,24 C142.172312,24 143.286201,23.8353266 143.906797,23.5723231 L143.873835,19.7943134 C143.535122,19.8582873 143.07138,19.9246305 142.483746,19.9246305 C141.057286,19.9246305 140.624233,19.0384746 140.624233,17.0991199 L140.624233,11.2822408 L144,11.2822408 Z" id="brand-Fill-7" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path d="M154.952622,13.6649229 C155.091598,12.2997314 155.986102,10.3649088 158.189514,10.3649088 C160.597599,10.3649088 161.145925,12.433126 161.145925,13.6649229 L154.952622,13.6649229 Z M166,15.1322635 C166,11.09918 163.936829,7 158.500316,7 C152.6494,7 150,11.5654602 150,15.6982893 C150,20.8009331 153.267214,24 158.980417,24 C161.25079,24 163.3506,23.6671144 165.07012,23.0001414 L164.382817,19.5655309 C162.969046,19.9993638 161.526216,20.2325039 159.737208,20.2325039 C157.293746,20.2325039 155.16235,19.233847 154.986734,17.1331825 L165.826911,17.1331825 C165.896399,16.7654461 166,15.9999293 166,15.1322635 L166,15.1322635 Z" id="brand-Fill-8" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path d="M181.421233,10.8984872 C182.735095,10.8984872 183.621048,11.1316273 184.211683,11.3984165 L185,7.63212215 C183.948911,7.23193836 182.506073,7 181.192211,7 C175.218359,7 172,10.8984872 172,15.6670437 C172,20.8009331 175.315994,24 180.503941,24 C182.407232,24 184.081502,23.6671144 184.96866,23.2681323 L184.378025,19.5330836 C183.621048,19.8323201 182.703755,20.0330129 181.52128,20.0330129 C179.092443,20.0330129 177.12165,18.4659268 177.12165,15.4663509 C177.086694,12.7996607 178.79592,10.8984872 181.421233,10.8984872" id="brand-Fill-9" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path d="M201.101598,7.09946687 C200.135623,7.09946687 199.137997,7.33465347 198.378383,7.74044174 C197.549138,8.18035034 196.861687,8.72140137 196.309701,9.43061691 L196.241336,9.43061691 L196.241336,0 L191,0 L191,24 L196.241336,24 L196.241336,14.1977152 C196.241336,13.8260472 196.275518,13.3861386 196.413515,13.0473724 C196.79079,12.1346535 197.654217,11.2572734 199.034183,11.2572734 C200.99905,11.2572734 201.756132,12.7439452 201.756132,14.9069307 L201.756132,24 L207,24 L207,14.3317593 C207,9.36237624 204.447697,7.09946687 201.101598,7.09946687" id="brand-Fill-10" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot1" d="M35.5005557,1 C34.1202489,1 33,2.11717216 33,3.50054549 C33,4.87846389 34.1202489,6 35.5005557,6 C36.8808624,6 38,4.87846389 38,3.50054549 C38,2.11717216 36.8808624,1 35.5005557,1" id="brand-Fill-11" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot2" d="M35.5005557,18 C34.1202489,18 33,19.1193541 33,20.5005455 C33,21.8817369 34.1202489,23 35.5005557,23 C36.8808624,23 38,21.8817369 38,20.5005455 C38,19.1193541 36.8808624,18 35.5005557,18" id="brand-Fill-12" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot3" d="M24.5,1 C23.1188889,1 22,2.11717216 22,3.50054549 C22,4.87846389 23.1188889,6 24.5,6 C25.8822222,6 27,4.87846389 27,3.50054549 C27,2.11717216 25.8822222,1 24.5,1" id="brand-Fill-13" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot4" d="M24.5,9 C23.1188889,9 22,10.1202007 22,11.5 C22,12.8797993 23.1188889,14 24.5,14 C25.8822222,14 27,12.8797993 27,11.5 C27,10.1202007 25.8822222,9 24.5,9" id="brand-Fill-14" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot5" d="M24.5,18 C23.1188889,18 22,19.1193541 22,20.5005455 C22,21.8817369 23.1188889,23 24.5,23 C25.8822222,23 27,21.8817369 27,20.5005455 C27,19.1193541 25.8822222,18 24.5,18" id="brand-Fill-15" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot6" d="M13.5011116,9 C12.1171632,9 11,10.1202007 11,11.5 C11,12.8797993 12.1171632,14 13.5011116,14 C14.8817252,14 16,12.8797993 16,11.5 C16,10.1202007 14.8817252,9 13.5011116,9" id="brand-Fill-16" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot7" d="M13.5011116,18 C12.1171632,18 11,19.1193541 11,20.5005455 C11,21.8817369 12.1171632,23 13.5011116,23 C14.8817252,23 16,21.8817369 16,20.5005455 C16,19.1193541 14.8817252,18 13.5011116,18" id="brand-Fill-17" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot8" d="M2.49722284,1 C1.1186403,1 0,2.11717216 0,3.50054549 C0,4.87846389 1.1186403,6 2.49722284,6 C3.87802711,6 5,4.87846389 5,3.50054549 C5,2.11717216 3.87802711,1 2.49722284,1" id="brand-Fill-18" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot9" d="M2.49722284,9 C1.1186403,9 0,10.1202007 0,11.5 C0,12.8797993 1.1186403,14 2.49722284,14 C3.87802711,14 5,12.8797993 5,11.5 C5,10.1202007 3.87802711,9 2.49722284,9" id="brand-Fill-19" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<path class="dot dot10" d="M2.49722284,18 C1.1186403,18 0,19.1193541 0,20.5005455 C0,21.8817369 1.1186403,23 2.49722284,23 C3.87802711,23 5,21.8817369 5,20.5005455 C5,19.1193541 3.87802711,18 2.49722284,18" id="brand-Fill-20" fill="#FFFFFF" mask="url(#brand-mask-2)"></path>
+									<!-- <g class="dot idot" ><path d="M85.5005554,1 C84.120862,1 83,2.11717216 83,3.50054549 C83,4.87846389 84.120862,6 85.5005554,6 C86.8802488,6 88,4.87846389 88,3.50054549 C88,2.11717216 86.8802488,1 85.5005554,1" id="brand-Fill-21" fill="#FFFFFF" mask="url(#brand-mask-2)"></path></g> -->
+								</g>
+							</g>
+						</g>
+					</g>
+				</svg><span class="brand-note">CX engineering / skill guide</span></a><div class="top-actions"><button class="print-button" type="button">Print guide</button><button class="menu-button" type="button" aria-expanded="false" aria-controls="guide-sidebar">Contents</button></div></header><div class="layout"><aside class="sidebar" id="guide-sidebar" aria-label="Guide navigation"><label for="guide-search">Find in this guide</label><input id="guide-search" type="search" placeholder="OAuth, AHT, pagination…" autocomplete="off"><p class="search-help" id="search-status" role="status" aria-live="polite">Search the full guide</p><nav aria-label="Contents"><a href="#overview" class="nav-link" aria-current="location">Overview</a><a class="nav-link" href="#capabilities">Capabilities</a><a class="nav-link" href="#workflow">How it works</a><a class="nav-link" href="#usage">Using the skill</a><a class="nav-link" href="#authentication">Authentication</a><a class="nav-link" href="#apis">API reference</a><a class="nav-link" href="#metrics">Metrics</a><a class="nav-link" href="#extraction">Extraction</a><a class="nav-link" href="#investigation">Investigations</a><a class="nav-link" href="#sources">Sources</a><a class="nav-link" href="#skill-contract">Skill contract</a></nav><div class="side-footer"><strong>genesys-reporting</strong><br>Genesys Cloud · Technical guide<br>Prepared November 6, 2026</div></aside><main id="main-content"><section id="overview" aria-labelledby="guide-title"><p class="eyebrow">Miratech / Genesys Cloud</p><h1 id="guide-title">Genesys reporting.<br>From API access<br>to trusted evidence.</h1><p class="lead">A detailed guide to <code>$genesys-reporting</code>: the reusable skill for authenticating, querying, extracting and interpreting Genesys Cloud reporting data.</p><div class="version-line"><span class="pill">Skill guide</span><span class="pill">Genesys Cloud</span><span class="pill">Updated November 6, 2026</span></div><figure class="intro-figure"><div class="mechanism"><div><b>Question</b><span>Entities, media,<br>dates and timezone</span><small>defines scope →</small></div><div><b>Access</b><span>Region, OAuth,<br>roles and divisions</span><small>authorizes query →</small></div><div><b>Data</b><span>API selection,<br>coverage and grain</span><small>supports analysis →</small></div><div><b>Evidence</b><span>Definitions, findings,<br>limits and next tests</span><small>informs decisions</small></div></div><figcaption>The skill connects access, data completeness and metric meaning before presenting a reporting conclusion.</figcaption></figure><p class="overview-note">Based on the installed skill and its six reference guides. Examples are illustrative. Local validation does not establish live tenant access or reconciled performance data.</p></section><p class="empty" id="empty-search" hidden>No sections match. Try a shorter term or clear the search.</p><section id="capabilities" class="doc-section" aria-labelledby="capabilities-title"><p class="eyebrow">Capabilities</p><h2 id="capabilities-title">What the skill helps you deliver</h2><p class="section-intro">One skill connects the technical acquisition of Genesys Cloud data with the discipline needed to interpret it.</p><div class="cap-grid"><article><h3>Reporting and analysis</h3><p>Investigate queues, agents and IVR flows. Compare matched periods, explain KPI movement and identify the next evidence to collect.</p></article><article><h3>API engineering</h3><p>Select aggregates, details, observations or jobs. Build scoped payloads and preserve the grain needed for correct results.</p></article><article><h3>Authentication and access</h3><p>Choose the OAuth grant and regional hosts. Diagnose token, permission, division and user-context failures.</p></article><article><h3>Reliable extraction</h3><p>Handle cursors, availability watermarks, retries, DST and incremental updates. Reconcile a representative slice with the portal.</p></article></div><h3>Designed for these roles</h3><p>Reporting analysts, contact-centre consultants, integration developers and technical leads who need reproducible Genesys Cloud evidence.</p><h3>Scope and boundaries</h3><p>The skill covers Genesys Cloud. Engage and PureConnect implementation require their own product guidance. Architect, routing, OAuth-client and role changes need an explicitly requested implementation scope.</p></section><section id="workflow" class="doc-section" aria-labelledby="workflow-title"><p class="eyebrow">How it works</p><h2 id="workflow-title">From a question to reproducible evidence</h2><ol class="workflow-list"><li><strong>Define the question.</strong> Resolve selected entities, media, reporting dates, timezone and the desired output.</li><li><strong>Establish access.</strong> Confirm region, grant type, permissions, divisions and a secure runtime credential binding.</li><li><strong>Choose the dataset.</strong> Use aggregates for KPIs, details for reconstruction, observations for current conditions and historical user data for availability.</li><li><strong>Collect completely.</strong> Preserve requests and timestamps. Finish pagination, inspect watermarks and record gaps.</li><li><strong>Interpret correctly.</strong> Pool sums and counts, compare compatible windows and distinguish observations from hypotheses.</li><li><strong>Validate and deliver.</strong> Reconcile a scoped slice and report definitions, coverage, findings and remaining limitations.</li></ol><div class="note"><strong>Success has several stages.</strong><p>An accepted request, a completed job, fully fetched results and reconciled evidence are different guarantees.</p></div></section><section id="usage" class="doc-section" aria-labelledby="usage-title"><p class="eyebrow">Using the skill</p><h2 id="usage-title">Start with the reporting decision you need</h2><p>Invoke <code>$genesys-reporting</code> and state the question, selected entities, date window and output. Automatic discovery can also select it for relevant Genesys Cloud reporting work.</p><div class="prompt"><span class="eyebrow">Performance investigation</span><p>Use $genesys-reporting to compare the Support and Billing queues for the last two complete weeks. Separate voice and messaging, show daily and 30-minute slices, and explain which intervals drive the service-level change. Discover the reporting timezone first.</p></div><div class="prompt"><span class="eyebrow">Authentication diagnosis</span><p>Use $genesys-reporting to diagnose a 403 from the conversation aggregate API. We use client credentials. Explain the region, permissions, divisions and grant-compatibility checks without asking for secrets.</p></div><div class="prompt"><span class="eyebrow">Pipeline design</span><p>Use $genesys-reporting to design a conversation-detail extraction for these selected queue IDs. Include asynchronous jobs, cursor checkpoints, availability watermarks, late-arriving updates and an upsert strategy.</p></div><div class="prompt"><span class="eyebrow">Reconciliation</span><p>Use $genesys-reporting to explain why a portal export and API AHT differ for the same queue-day. Check scope, timezone, event timing, units, sufficient statistics and completeness before changing formulas.</p></div><h3>Inputs that improve the result</h3><p>Provide entity names or IDs, media, date intent, known timezone, the approved connection and desired format. The skill resolves accessible context before asking for information. Never paste client secrets or bearer tokens.</p><h3>What to expect</h3><p>API tasks return a precise endpoint, payload or SDK model, access prerequisites and extraction strategy. Reporting tasks return dates, filters, KPI definitions, coverage, findings and material gaps. Authentication tasks identify the failed layer and the narrow remedy.</p></section><section id="authentication" class="doc-section" aria-labelledby="authentication-title"><p class="eyebrow">Authentication</p><h2 id="authentication-title">Authentication, identity and access</h2><h3 id="authentication-select-region-and-identity">Select region and identity</h3>
+<p>Confirm the organization region from its known sign-in URL, connected configuration or administrator-provided region. Select the matching official SDK region host before constructing the API client. Login and API hosts must belong to that environment. Never infer region from user geography, or reporting timezone from region. Example commercial hosts <code>login.mypurecloud.com</code> and <code>api.mypurecloud.com</code> are US East examples, not global defaults. Check current mappings for newer regions and sovereign environments.</p>
+<p>Choose client credentials for a service acting as itself; choose authorization code with PKCE for a user-facing application acting with user context. Public clients cannot keep a client secret. Preserve the organization&#x27;s approved SSO/delegated flow when one exists. Do not design new integrations around legacy implicit grants. Confirm currently supported grant configuration and token behavior from the OAuth client documentation.</p>
+<p>Client credentials obtain application authority from assigned roles and divisions, with no human user context. An endpoint requiring a logged-in user can reject that grant even when permissions look sufficient. Do not use <code>/users/me</code> as a universal authentication probe. Test a narrow read appropriate to the actual reporting task.</p>
+<h3 id="authentication-oauth-wire-contract">OAuth wire contract</h3>
+<p>For client credentials, POST to the confirmed regional login host at <code>/oauth/token</code> over HTTPS. Send <code>Content-Type: application/x-www-form-urlencoded</code>, HTTP Basic authentication using client ID and secret, and body <code>grant_type=client_credentials</code>. Basic encoding is not encryption. Read <code>access_token</code>, <code>token_type</code> and <code>expires_in</code>; retain the token only in the protected runtime and renew shortly before expiration. Client credentials acquire a new token with the same grant, rather than assuming a refresh token.</p>
+<p>Platform API requests use <code>Authorization: Bearer &lt;runtime-token&gt;</code> and JSON payloads where the endpoint expects JSON. Do not send a JSON object in place of the token endpoint&#x27;s form body. Do not send client secrets to an API resource endpoint or place tokens in URLs.</p>
+<p>For authorization code/PKCE, validate state, bind verifier/challenge correctly, use the exact registered redirect URI, and exchange the code at the correct regional token endpoint. Consult the current grant guide for refresh and revocation support. Never automate password entry as a replacement for OAuth.</p>
+<h3 id="authentication-official-python-sdk-pattern">Official Python SDK pattern</h3>
+<p>Illustrative setup, not executed during skill creation. Dependency: an approved, pinned <code>PureCloudPlatformClientV2</code> version. The named environment variables are runtime bindings; their values must not be printed.</p>
+<div class="code-wrap"><div class="code-head"><span>python</span><button type="button" class="copy-code">Copy code</button></div><pre><code>import os
+import PureCloudPlatformClientV2 as gc
+
+# Example only: replace with the confirmed organization region.
+region = gc.PureCloudRegionHosts.us_east_1
+gc.configuration.host = region.get_api_host()
+client = gc.api_client.ApiClient().get_client_credentials_token(
+    os.environ[&quot;GENESYS_CLOUD_CLIENT_ID&quot;],
+    os.environ[&quot;GENESYS_CLOUD_CLIENT_SECRET&quot;],
+)
+analytics = gc.AnalyticsApi(client)
+# Build the endpoint&#x27;s typed query model before calling it.
+# Keep HTTP debugging disabled where headers/bodies could contain secrets or PII.</code></pre></div>
+<p>Pass the authenticated client to each API class. Do not construct a second unauthenticated client accidentally. Review SDK serialization and automatic token/retry behavior for the installed version before adding duplicate renewal/retry logic. Do not assume a raw dictionary is accepted by a typed SDK method; populate its documented model or use an explicitly supported REST client.</p>
+<h3 id="authentication-permission-model">Permission model</h3>
+<p>Authentication proves identity; access also depends on grant compatibility, endpoint permissions, applicable scopes, role/division grants, licensing and data visibility. OAuth scopes and platform role permissions are different controls. Do not invent scope names from permission names or solve a 403 by assigning blanket administrator access.</p>
+<p>Starting permission examples, to verify against the selected endpoint:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr><th scope="col">Need</th><th scope="col">Typical platform permission</th></tr></thead><tbody>
+<tr><td>Conversation aggregates</td><td><code>analytics:conversationAggregate:view</code></td></tr>
+<tr><td>Conversation details</td><td><code>analytics:conversationDetail:view</code></td></tr>
+<tr><td>Flow aggregates</td><td><code>analytics:flowAggregate:view</code></td></tr>
+<tr><td>User aggregates</td><td><code>analytics:userAggregate:view</code></td></tr>
+<tr><td>User details</td><td><code>analytics:userDetail:view</code></td></tr>
+<tr><td>Queue metadata</td><td><code>routing:queue:view</code></td></tr>
+<tr><td>Architect flow metadata</td><td><code>architect:flow:view</code></td></tr>
+</tbody></table></div>
+<p>Some endpoints offer alternative permissions with different visibility, such as agent-specific conversation details. Inspect the endpoint&#x27;s ANY/ALL requirements. Portal views can need additional permissions beyond the API query. Match the requested divisions; a successful response can still omit inaccessible entities.</p>
+<p>For authorized OAuth setup, define the grant, region, minimum roles/divisions, redirect URIs and runtime secret destination concretely before creation. Grant role/division changes through the approved administrator process. Do not embed an organization&#x27;s client ID, secret or token in this reusable skill.</p>
+<h3 id="authentication-diagnose-the-failed-layer">Diagnose the failed layer</h3>
+<ul>
+<li>Token 400/401: verify form encoding, client type, client authentication, region and configured grant. Avoid logging the request&#x27;s Authorization header.</li>
+<li>API 401: check expiry, bearer format, region and which client actually made the call. Reacquire once when justified; stop repeated failures.</li>
+<li>API 403: check exact permissions, divisions, scope, grant/user-context compatibility and any configured IP restrictions. A different token does not fix missing grants.</li>
+<li>Empty data: confirm entity IDs, interval, filters and division visibility before concluding there is no activity.</li>
+</ul>
+<p>Official references: <a href="https://help.genesys.cloud/articles/create-an-oauth-client/">OAuth client setup</a>, <a href="https://developer.genesys.cloud/authorization/platform-auth/use-client-credentials">client credentials guide</a>, <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/README.md">SDK authentication and regions</a>, <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/api_client.py">SDK token implementation</a>.</p></section><section id="apis" class="doc-section" aria-labelledby="apis-title"><p class="eyebrow">API reference</p><h2 id="apis-title">Choose the API and build the request</h2><h3 id="apis-select-the-reporting-surface">Select the reporting surface</h3>
+<p>All paths are relative to the confirmed regional Platform API host. The current official <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/docs/AnalyticsApi.md">Analytics API reference</a> supplies precise schemas, permissions and status behavior.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr><th scope="col">Question</th><th scope="col">Method and path</th></tr></thead><tbody>
+<tr><td>Historical queue/contact KPIs</td><td>POST <code>/api/v2/analytics/conversations/aggregates/query</code></td></tr>
+<tr><td>Narrow conversation reconstruction</td><td>POST <code>/api/v2/analytics/conversations/details/query</code></td></tr>
+<tr><td>Bulk conversation extraction</td><td>POST <code>/api/v2/analytics/conversations/details/jobs</code></td></tr>
+<tr><td>Job status</td><td>GET <code>/api/v2/analytics/conversations/details/jobs/{jobId}</code></td></tr>
+<tr><td>Job result pages</td><td>GET <code>/api/v2/analytics/conversations/details/jobs/{jobId}/results</code></td></tr>
+<tr><td>Detail data availability</td><td>GET <code>/api/v2/analytics/conversations/details/jobs/availability</code></td></tr>
+<tr><td>One analytics conversation</td><td>GET <code>/api/v2/analytics/conversations/{conversationId}/details</code></td></tr>
+<tr><td>Current queue conditions</td><td>POST <code>/api/v2/analytics/queues/observations/query</code></td></tr>
+<tr><td>Historical agent statistics</td><td>POST <code>/api/v2/analytics/users/aggregates/query</code></td></tr>
+<tr><td>Historical agent state intervals</td><td>POST <code>/api/v2/analytics/users/details/query</code></td></tr>
+<tr><td>Current user conditions</td><td>POST <code>/api/v2/analytics/users/observations/query</code></td></tr>
+<tr><td>IVR/flow statistics</td><td>POST <code>/api/v2/analytics/flows/aggregates/query</code></td></tr>
+</tbody></table></div>
+<p>User-detail jobs and several aggregate-job families also exist. Verify their current contracts rather than assuming all families share one paging or freshness model. Inspect preview status before adopting additional bot, journey, quality, transcript, campaign or utilization APIs. Do not extrapolate an endpoint by substituting a resource noun.</p>
+<p>Observations answer current-state questions; they do not reconstruct a historical interval. Presence, routing status, utilization, WFM schedules and adherence are related but distinct datasets. Choose the actual dataset needed for a workforce question.</p>
+<h3 id="apis-entity-discovery">Entity discovery</h3>
+<p>Use paginated directory endpoints or an authorized connector to resolve selected entities. Common paths include GET <code>/api/v2/routing/queues</code>, <code>/api/v2/users</code>, <code>/api/v2/flows</code>, and selected <code>/api/v2/routing/queues/{queueId}</code>. Verify each resource&#x27;s query parameters and permissions. Record exact ID, display name, division, and flow type/version when relevant. Match ambiguous names explicitly; do not use the first substring match. Current names/configuration are not proof of their historical values.</p>
+<h3 id="apis-queue-aggregate-example">Queue aggregate example</h3>
+<p>Illustrative REST body: <code>QUEUE_ID</code> must be replaced with an explicitly resolved selection. The dates and <code>America/New_York</code> are examples. This window crosses the fall DST change and spans 49 elapsed hours. Confirm metric support and filter schema before execution.</p>
+<div class="code-wrap"><div class="code-head"><span>json</span><button type="button" class="copy-code">Copy code</button></div><pre><code>{
+  &quot;interval&quot;: &quot;2026-10-31T04:00:00Z/2026-11-02T05:00:00Z&quot;,
+  &quot;timeZone&quot;: &quot;America/New_York&quot;,
+  &quot;granularity&quot;: &quot;P1D&quot;,
+  &quot;groupBy&quot;: [&quot;queueId&quot;, &quot;mediaType&quot;],
+  &quot;metrics&quot;: [&quot;nOffered&quot;, &quot;tAnswered&quot;, &quot;tAbandon&quot;, &quot;tHandle&quot;, &quot;tWait&quot;, &quot;oServiceLevel&quot;],
+  &quot;filter&quot;: {
+    &quot;type&quot;: &quot;and&quot;,
+    &quot;clauses&quot;: [
+      {
+        &quot;type&quot;: &quot;or&quot;,
+        &quot;predicates&quot;: [
+          {&quot;type&quot;: &quot;dimension&quot;, &quot;dimension&quot;: &quot;queueId&quot;, &quot;operator&quot;: &quot;matches&quot;, &quot;value&quot;: &quot;QUEUE_ID&quot;}
+        ]
+      },
+      {
+        &quot;type&quot;: &quot;or&quot;,
+        &quot;predicates&quot;: [
+          {&quot;type&quot;: &quot;dimension&quot;, &quot;dimension&quot;: &quot;mediaType&quot;, &quot;operator&quot;: &quot;matches&quot;, &quot;value&quot;: &quot;voice&quot;}
+        ]
+      }
+    ]
+  }
+}</code></pre></div>
+<p>For more queues add predicates to the queue OR clause, retaining the AND relationship with media. A single OR across queue and media would unintentionally broaden scope. Change granularity to <code>PT30M</code> for a separate intraday dataset; do not add that dataset to the daily one. Keep <code>queueId</code> and <code>mediaType</code> in the group so interpretation preserves their populations.</p>
+<p>Other diagnostic metrics can include <code>tShortAbandon</code>, <code>tTalkComplete</code>, <code>tHeldComplete</code>, <code>tAcw</code>, <code>nTransferred</code>. Verify support rather than treating this as an exhaustive catalogue. See <a href="#metrics">metrics.md</a>.</p>
+<h3 id="apis-conversation-detail-example">Conversation detail example</h3>
+<p>Details use their own filter model, not aggregate <code>filter</code>, <code>groupBy</code> or <code>granularity</code> fields. A queue filter selects conversations with matching segments; it does not mean all returned participants/segments belong to that queue.</p>
+<div class="code-wrap"><div class="code-head"><span>json</span><button type="button" class="copy-code">Copy code</button></div><pre><code>{
+  &quot;interval&quot;: &quot;2026-11-02T05:00:00Z/2026-11-03T05:00:00Z&quot;,
+  &quot;order&quot;: &quot;asc&quot;,
+  &quot;orderBy&quot;: &quot;conversationStart&quot;,
+  &quot;paging&quot;: {&quot;pageSize&quot;: 100, &quot;pageNumber&quot;: 1},
+  &quot;segmentFilters&quot;: [
+    {
+      &quot;type&quot;: &quot;and&quot;,
+      &quot;predicates&quot;: [
+        {&quot;type&quot;: &quot;dimension&quot;, &quot;dimension&quot;: &quot;queueId&quot;, &quot;operator&quot;: &quot;matches&quot;, &quot;value&quot;: &quot;QUEUE_ID&quot;},
+        {&quot;type&quot;: &quot;dimension&quot;, &quot;dimension&quot;: &quot;mediaType&quot;, &quot;operator&quot;: &quot;matches&quot;, &quot;value&quot;: &quot;voice&quot;}
+      ]
+    }
+  ]
+}</code></pre></div>
+<p>This is a synchronous example. Check interval-selection semantics, page/deep-pagination limits and open-conversation behavior. Use the documented asynchronous request model for a bulk job; do not blindly pass <code>paging</code> from this example to a job request.</p>
+<p>Preserve the nested grain: conversation → participants → sessions → segments, plus session metrics and flow/outcome fields where present. Queue attribution often lives at segment level. Flattening multiple child arrays together can multiply rows and counts. Apply queue, media, event-time and segment logic to the chosen grain before deriving measures. Do not assume the matching conversation&#x27;s start date equals the date each metric was emitted.</p>
+<h3 id="apis-flow-aggregate-example">Flow aggregate example</h3>
+<div class="code-wrap"><div class="code-head"><span>json</span><button type="button" class="copy-code">Copy code</button></div><pre><code>{
+  &quot;interval&quot;: &quot;2026-11-02T05:00:00Z/2026-11-03T05:00:00Z&quot;,
+  &quot;timeZone&quot;: &quot;America/New_York&quot;,
+  &quot;granularity&quot;: &quot;P1D&quot;,
+  &quot;groupBy&quot;: [&quot;flowId&quot;, &quot;mediaType&quot;],
+  &quot;metrics&quot;: [&quot;nFlow&quot;, &quot;tFlow&quot;, &quot;tFlowDisconnect&quot;, &quot;tFlowExit&quot;],
+  &quot;filter&quot;: {
+    &quot;type&quot;: &quot;or&quot;,
+    &quot;predicates&quot;: [
+      {&quot;type&quot;: &quot;dimension&quot;, &quot;dimension&quot;: &quot;flowId&quot;, &quot;operator&quot;: &quot;matches&quot;, &quot;value&quot;: &quot;FLOW_ID&quot;}
+    ]
+  }
+}</code></pre></div>
+<p>Separate outcome slices can group by <code>flowOutcomeId</code> and <code>flowOutcomeValue</code>, using supported <code>nFlowOutcome</code>, <code>nFlowOutcomeFailed</code>, <code>tFlowOutcome</code>; version slices can use <code>flowVersion</code>. Verify current allowed combinations. Do not invent <code>nFlowOutcomeSuccess</code>, infer success from a missing failed metric, or combine overlapping outcome/version slices into base flow volume. Flow instrumentation and type determine available outcomes; in-queue flow behavior can differ.</p>
+<p>Model references: <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/models/conversation_aggregation_query.py">conversation aggregate</a>, <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/models/conversation_query.py">conversation detail</a>, <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/models/flow_aggregation_query.py">flow aggregate</a>.</p></section><section id="metrics" class="doc-section" aria-labelledby="metrics-title"><p class="eyebrow">Metrics</p><h2 id="metrics-title">Calculate and interpret metrics correctly</h2><h3 id="metrics-grain-units-and-pooling">Grain, units and pooling</h3>
+<p>Retain metric name, group dimensions, interval, statistics and configuration provenance. Raw analytics duration statistics are generally milliseconds; verify the source and convert once. Portal exports may already be seconds or formatted durations. A metric omitted from a sparse response is not automatically zero.</p>
+<p>For disjoint compatible slices, pool additive numerators and denominators first. Do not average averages or percentages. Rows missing required sufficient statistics cannot silently drop out of a pooled measure. A zero denominator is N/A, not 0%. Never sum daily and intraday results, base data and drilldowns, or overlapping partitions.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr><th scope="col">Measure</th><th scope="col">Working definition</th></tr></thead><tbody>
+<tr><td>Offered</td><td><code>nOffered.count</code>; queue offers, not distinct callers</td></tr>
+<tr><td>Answered</td><td><code>tAnswered.count</code>; do not replace with connected or handled</td></tr>
+<tr><td>Abandoned</td><td><code>tAbandon.count</code>, with channel-specific semantics</td></tr>
+<tr><td>Handled</td><td><code>tHandle.count</code>; its event timing and population differ from answered</td></tr>
+<tr><td>ASA in seconds</td><td>sum of <code>tAnswered.sum</code> / sum of <code>tAnswered.count</code> / 1000</td></tr>
+<tr><td>AHT in seconds</td><td>sum of <code>tHandle.sum</code> / sum of <code>tHandle.count</code> / 1000</td></tr>
+<tr><td>Average wait/abandon</td><td>own duration sum / own count / 1000</td></tr>
+<tr><td>Talk/hold/ACW averages</td><td>own <code>tTalkComplete</code>, <code>tHeldComplete</code>, <code>tAcw</code> sum / own count / 1000</td></tr>
+<tr><td>Short abandons</td><td><code>tShortAbandon.count</code>; obtain the configured threshold</td></tr>
+<tr><td>Transfers</td><td><code>nTransferred.count</code>; declare a denominator for any rate</td></tr>
+<tr><td>Service level</td><td><code>oServiceLevel</code>; preserve returned sufficient statistics and configuration</td></tr>
+<tr><td>Flow execution volume</td><td>verified <code>nFlow.count</code>; not unique customers</td></tr>
+<tr><td>Average flow duration</td><td><code>tFlow.sum</code> / <code>tFlow.count</code> / 1000</td></tr>
+</tbody></table></div>
+<p>Worked weighting: one bucket has 10 handles totaling 100 seconds; another has 90 totaling 1,800 seconds. Pooled AHT is 1,900/100 = 19 seconds, rather than the unweighted 15 seconds. A ratio-only export cannot recover an exact pooled rate without its denominator.</p>
+<p>Talk, hold and ACW metrics may have different observation populations and boundaries; their averages need not sum to AHT. Counts from event metrics often use <code>stats.count</code>; do not assume <code>sum</code> is an event count or that a metric prefix is a full semantic specification. Preserve actual response statistics.</p>
+<h3 id="metrics-service-level">Service level</h3>
+<p>Use the API&#x27;s service-level metric and returned numerator/denominator when available. Confirm response shape and scale before calculating or displaying percentages. Pool sufficient statistics only when threshold and inclusion settings are comparable. If only ratios are available, report the scope-specific ratios or mark pooling unavailable.</p>
+<p>Service-level configuration can include/exclude abandons, short abandons and flow-outs, with channel/callback-specific options. Read the relevant organization/queue configuration and reporting-view definition. If unavailable, disclose it; do not substitute a universal formula. Configuration changes can invalidate historical comparisons, and today&#x27;s setting does not establish last month&#x27;s setting.</p>
+<p>Source for configuration dependence: <a href="https://help.genesys.cloud/?p=185887">Queues Activity Detail view</a>. This documentation changes as callback behavior evolves; recheck before implementing callback SL.</p>
+<h3 id="metrics-attribution-and-channel-differences">Attribution and channel differences</h3>
+<p>A conversation can traverse several queues, agents, media legs and flows. Adding queue offers measures workload, not deduplicated people or journeys. Answered, offered and handled events can fall in different buckets. Short-interval answered/offered ratios are event ratios rather than same-cohort conversion probabilities; a ratio above 100% can reflect timing rather than a bug.</p>
+<p>Callbacks must be separated from voice legs. Customer-first and agent-first lifecycles can attribute events differently. Offered/answered/SL alone do not establish reach, bridge success or customer waiting experience; inspect the relevant lifecycle details. Web messaging, email and asynchronous channels do not inherit voice abandon and duration assumptions. Open/reopened interactions and concurrency affect interpretation.</p>
+<p>Define both numerator and population before transfer rate, repeat-contact rate, first-contact resolution, containment, deflection or self-service success. Linked repeat contact needs an explicit identity rule and follow-up horizon. A disconnect is not proof of successful containment; a flow outcome is evidence of its instrumented definition, not an assumed business result. Multiple outcomes per execution are not mutually exclusive.</p>
+<h3 id="metrics-agent-and-workforce-reporting">Agent and workforce reporting</h3>
+<p>Presence, routing status, on-queue time, utilization, handling work, schedules, adherence and paid staffing are different concepts. Current presence or queue membership cannot establish historical staffing. Use historical user state/detail or the appropriate workforce dataset for the interval, including state definitions, effective membership and reporting eligibility.</p>
+<p>Before computing occupancy/utilization, state the exact numerator and eligible-time denominator, media treatment and concurrency model. Adding overlapping digital handle durations can exceed wall-clock time. Do not divide queue handle time by an assumed headcount or treat offered volume as agent productivity. Queue-level SL cannot establish an individual agent&#x27;s performance.</p>
+<h3 id="metrics-trend-reasoning">Trend reasoning</h3>
+<p>Separate demand, effective capacity, workload, mix, routing and measurement changes. Compare the same local hours, operating calendar, media and definitions. Show absolute volume changes and rate changes in percentage points. Percentage change needs a nonzero baseline. Segment mix can worsen an overall KPI even when each segment improves.</p>
+<p>A few days support descriptive findings, not established seasonality or causality. Do not invent targets, confidence intervals or significance from incomplete observations. Distinguish low volume, no returned rows, confirmed zero, unavailable metrics and permission-filtered data.</p>
+<p>Definition references: <a href="https://help.genesys.cloud/articles/view-available-columns-in-performance-views-by-category/">performance columns</a>, <a href="https://help.genesys.cloud/faqs/category/reports/">reporting FAQs</a>, <a href="https://help.genesys.cloud/articles/flow-outcomes-summary-view/">Flow Outcomes Summary</a>.</p></section><section id="extraction" class="doc-section" aria-labelledby="extraction-title"><p class="eyebrow">Extraction</p><h2 id="extraction-title">Retrieve complete, reproducible datasets</h2><h3 id="extraction-time-contract">Time contract</h3>
+<p>Record the reporting IANA timezone and its provenance separately from API region and extraction timestamp. Inspect the relevant performance-view setting when available. An offset such as UTC-5 is insufficient to identify a DST-aware region. If sources conflict, resolve the ambiguity with the user; do not guess from computer location.</p>
+<p>Resolve relative language into explicit local dates and state the interpretation. For “since last Monday” use an established user convention; absent one, state an interpretation before calculating. The existing investigation convention is the most recent Monday strictly before today, including seven days earlier when today is Monday.</p>
+<p>Convert local calendar boundaries with timezone-aware code, using half-open windows <code>[start,end)</code>. Freeze one as-of instant for the run and label the current date partial. A local day can be 23 or 25 hours; add calendar dates in the local timezone instead of assuming a fixed 24-hour UTC duration. Retain offset-aware timestamps for repeated fall-back hours. Use the aggregate query&#x27;s supported <code>timeZone</code>; detail queries use explicit absolute bounds and their own model. Timestamp/alternate-time-dimension choices must match across comparisons.</p>
+<p>For local wall times that can be ambiguous or nonexistent, require an explicit offset/fold rule or choose validated calendar boundaries. Python <code>zoneinfo</code> requires installed IANA timezone data; a Windows runtime may require the <code>tzdata</code> package. Do not silently fall back to the machine timezone.</p>
+<p>Compare partial days only with equivalent elapsed windows or exclude them from headline deltas. Daily and intraday reconciliation must cover the same instants. Avoid assuming UTC days match the portal&#x27;s local dates.</p>
+<h3 id="extraction-collection-manifest">Collection manifest</h3>
+<p>Keep per-run metadata next to immutable raw responses and request bodies. Include only fields relevant to the run:</p>
+<ul>
+<li>Organization alias/region and connector or SDK version; no secrets.</li>
+<li>Entity IDs/names/divisions, media/direction, timezone and timezone source.</li>
+<li>Exact UTC interval and local labels, as-of time, granularity and timestamp convention.</li>
+<li>Metric names/units, configuration provenance and comparison scope.</li>
+<li>Requests, job IDs, cursors/checkpoints, response status and correlation IDs when available.</li>
+<li>Availability watermark, rows/pages retrieved, known gaps, exclusions and completion status.</li>
+</ul>
+<p>Use explicit states such as planned, submitted, completed, fully fetched and reconciled. They represent different guarantees. Keep sensitive response bodies out of public reports and exception logs.</p>
+<h3 id="extraction-paging-and-asynchronous-jobs">Paging and asynchronous jobs</h3>
+<p>Directory pagination, synchronous detail paging and asynchronous result cursors are different contracts. Verify the endpoint&#x27;s termination conditions and limits. Do not use an aggregate response <code>limit</code> as if it were a page cursor. A successful capped query may require splitting scope or time to obtain all groups.</p>
+<p>For an asynchronous detail extraction:</p>
+<ol>
+<li>Check <code>/api/v2/analytics/conversations/details/jobs/availability</code> and document what the current response says is available. A finished computation does not guarantee the most recent interactions were available to it.</li>
+<li>Submit the documented async query model; persist the job ID and request metadata without secrets.</li>
+<li>Poll that existing job with bounded backoff until a documented terminal state. Respect deadline, failure and expiration states; do not create replacement jobs simply because polling timed out.</li>
+<li>Fetch every result page using the returned cursor. Detect repeated cursors and preserve the last durable checkpoint.</li>
+<li>Verify fetch completion, scope and coverage before publishing. Record any interval beyond the available watermark as provisional or deferred.</li>
+</ol>
+<p>If job submission times out before an ID returns, the outcome is uncertain. Reconcile using connector/job-discovery capabilities when available. Otherwise disclose uncertainty and avoid unbounded duplicate submissions. A correlation ID is useful for support, not proof the request is safely idempotent.</p>
+<p>Do not hardcode one lookback, retention window, maximum interval, job lifetime, page limit or rate limit for every API family. Verify current documentation and applicable organization settings. Data absent outside a retention window is not zero activity.</p>
+<h3 id="extraction-retries-and-query-size">Retries and query size</h3>
+<p>Start conservatively, for example with two concurrent analytics queries; increase only with evidence that the tenant and endpoint permit it. Honor <code>Retry-After</code> on 429s, supporting either a delay or HTTP date when returned. Use bounded exponential backoff with jitter for transient network/5xx failures; three retries is a useful starting budget, not a platform guarantee. Coordinate with SDK retry behavior.</p>
+<p>Do not retry invalid-schema 400s or permission 403s unchanged. For 401, renew once when expiry is the reason. Reduce interval, dimensions or selected-entity batch on query-size errors. Preserve successful partitions and explicit gaps. Split at nonoverlapping absolute bounds with consistent metric semantics; deduplicate overlapping detail results where the API&#x27;s interval selection returns the same conversation more than once.</p>
+<h3 id="extraction-incremental-data-and-storage">Incremental data and storage</h3>
+<p>Use a watermark based on verified data availability rather than just wall-clock now. Advance the durable checkpoint after all pages and storage commits succeed. Re-query a documented overlap to capture late-arriving metrics and updated conversations, then upsert at the actual grain. A conversation can change after it first appears; append-only conversationStart extraction can miss updates or completions.</p>
+<p>Choose stable keys supported by the payload. Conversation ID is suitable for a current conversation snapshot; it is not a unique key for participants, sessions, segments or metric events. Segments may require a documented composite key or snapshot replacement. Preserve raw JSON and schema/version provenance so transformations can be corrected. Do not invent a segment ID that the payload does not provide.</p>
+<p>Keep queue, user, flow and division mappings separately, preserving historical versions when needed. Current directory labels and current membership cannot retrospectively reconstruct historical state. Confirm retention, access and approved destination for the user&#x27;s requested pipeline; do not upload raw tenant data to a new service implicitly.</p>
+<h3 id="extraction-reconcile-against-the-portal">Reconcile against the portal</h3>
+<p>Select one queue-day-media slice and match IDs, timezone, dates, media/direction, filters, service-level configuration, timestamp convention and as-of timing. Record the portal view and export units. Compare primitive counts and duration sums before derived averages or rates.</p>
+<p>Investigate differences in order: scope/filters → local/UTC boundaries and DST → metric definitions and event timing → permissions/divisions → pagination/caps → delayed data/open interactions → rounding/export transformation. Do not force equality by changing a formula without evidence. Daily and intraday totals should reconcile only where the metric is additive and the populations, coverage and semantics match.</p>
+<p>Portal fallback is valid when APIs are inaccessible. Preserve export provenance and map columns explicitly. Missing denominators, sums or numerator counts remain unavailable; do not backfill invented sufficient statistics from rounded averages.</p></section><section id="investigation" class="doc-section" aria-labelledby="investigation-title"><p class="eyebrow">Investigations</p><h2 id="investigation-title">Turn evidence into useful findings</h2><h3 id="investigation-evidence-driven-investigation">Evidence-driven investigation</h3>
+<p>Start with the user&#x27;s selected queues, flows, agents or explicit organization scope. Preserve those IDs throughout comparisons. Queue-only, flow-only and combined investigations are valid; never require queue IDs for flow-only work. Freeze extraction time and compare like local windows.</p>
+<p>Obtain daily and intraday aggregates for the same population. Keep baseline, media, flow-version, outcome and other drilldowns as separate datasets. Identify the intervals and segments driving a change before collecting narrow details. Check missing buckets, open conversations, provisional data and permission coverage before interpreting trends.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr><th scope="col">Pattern</th><th scope="col">Plausible hypothesis</th><th scope="col">Evidence needed / competing explanation</th></tr></thead><tbody>
+<tr><td>Volume and delay rise</td><td>Demand pressure</td><td>Matched hours and staffing; handle workload may also rise</td></tr>
+<tr><td>Volume stable, delay worsens</td><td>Capacity or routing eligibility</td><td>Historical state, schedules, eligibility; arrivals may have shifted within buckets</td></tr>
+<tr><td>AHT grows mainly in ACW</td><td>Workflow or case-mix change</td><td>Wrap-up/contact mix and process history</td></tr>
+<tr><td>One queue rises while another falls</td><td>Routing or transfer change</td><td>Linked journeys and configuration history; independent demand is possible</td></tr>
+<tr><td>Flow disconnects rise</td><td>Technical failure or self-service change</td><td>Outcome, exit, version and error evidence; disconnect alone proves neither</td></tr>
+<tr><td>Outcome success declines after release</td><td>Regression or audience change</td><td>Matched version/intent populations and unchanged instrumentation</td></tr>
+</tbody></table></div>
+<p>Each material finding should distinguish the observed fact, interpretation, confidence, alternatives and next test. Link to exact local evidence or supplied source identifiers. “Associated with” is appropriate for correlation. State cause only when the evidence supports that stronger claim. Do not collect broad conversation/customer data when a smaller slice can test the hypothesis.</p>
+<h3 id="investigation-deliver-the-format-requested">Deliver the format requested</h3>
+<p>A concise answer may be sufficient. For a file/report, include explicit date range, timezone, as-of time, selected entities/media, coverage, KPI definitions, comparison windows, findings and material gaps. Preserve reusable raw/request evidence locally without embedding it all in the report.</p>
+<p>For an offline HTML report: embed required CSS/JS, avoid CDNs/fonts/beacons, and exclude credentials, ANI, transcripts and unnecessary user/customer identifiers. Escape inserted strings and use safe JSON embedding for labels that could contain markup. Show empty/unavailable/provisional states distinctly. Verify it in a supported browser, including filtering and responsive layout. Do not claim visual QA if it was not opened.</p>
+<p>For CSV/spreadsheet outputs: preserve numeric duration units and time offsets, identify row grain, distinguish blank from zero, and neutralize formula-like untrusted labels in cells. For a pipeline deliver the actual requested implementation plus checkpoint, paging and late-data strategy; a suggested architecture alone does not complete an implementation request.</p>
+<h3 id="investigation-troubleshooting-map">Troubleshooting map</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr><th scope="col">Symptom</th><th scope="col">First checks</th></tr></thead><tbody>
+<tr><td>Token acquisition fails</td><td>Regional login host, grant type, form encoding and client authentication</td></tr>
+<tr><td>API 401</td><td>Expiry, bearer header, region and actual client instance</td></tr>
+<tr><td>API 403</td><td>Endpoint ANY/ALL permissions, role/division grants, scopes, user context and applicable IP controls</td></tr>
+<tr><td>400 query error</td><td>Correct endpoint model, exact field casing, supported metric/dimension, filter nesting and limits</td></tr>
+<tr><td>Empty or unexpectedly small results</td><td>Selected IDs, interval, media, division visibility, sparse response and availability</td></tr>
+<tr><td>429 or repeated timeout</td><td>Retry-After, shared client load, SDK retry multiplication and query size</td></tr>
+<tr><td>Async complete but missing data</td><td>Availability watermark, all result cursors, gaps, open/late conversations and retention</td></tr>
+<tr><td>Portal/API mismatch</td><td>Match scope, timezone, event timing, metric definitions, configuration and as-of timestamp</td></tr>
+<tr><td>Duplicated totals after flattening</td><td>Nested join multiplication, overlapping datasets, repeat queue/flow visits and detail upsert key</td></tr>
+<tr><td>Occupancy above 100%</td><td>Concurrent handling overlap, mixed populations and denominator definition</td></tr>
+</tbody></table></div>
+<p>Preserve safe error status, endpoint, timestamp, connector version and correlation ID for diagnosis. Redact secrets, headers and sensitive body values before sharing. Avoid treating every API problem as an authentication failure.</p>
+<h3 id="investigation-practical-validation-cases">Practical validation cases</h3>
+<p>Use these to review implementation decisions; tenant access is not required for design work:</p>
+<ul>
+<li>Unequal bucket volumes: pooled AHT uses duration sums/counts and gives 19 seconds for the example in metrics.md.</li>
+<li>New York DST window in api-queries.md: two local dates span 49 elapsed hours; repeated local hours retain distinct offsets.</li>
+<li>Flow-only request: uses flow metrics and selected flow IDs, without substituting queue activity.</li>
+<li>Restricted division: a 200 with missing entities is a coverage limitation until visibility is verified.</li>
+<li>Timed-out job poll: resume the existing job; do not resubmit it blindly.</li>
+<li>Ratio-only export: exact pooled service level remains unavailable.</li>
+<li>Authenticated app with no human context: do not use a user-only endpoint as the token validity test.</li>
+</ul>
+<p>For live work, reconcile a small representative slice before broad extraction. Local JSON/schema checks establish structure, not permission, completeness or live metric semantics.</p></section><section id="sources" class="doc-section" aria-labelledby="sources-title"><p class="eyebrow">Sources</p><h2 id="sources-title">Source register and verification limits</h2><p>Prepared 2026-11-06. This is reusable Genesys Cloud guidance, not an exhaustive catalogue of every licensed feature. No live organization was accessed and no credentials were discovered. Product/API behavior, limits and licensing can change; record current verification when executing a task.</p>
+<h3 id="sources-primary-sources">Primary sources</h3>
+<ul>
+<li><a href="https://help.genesys.cloud/articles/create-an-oauth-client/">OAuth client configuration</a> — readable during authoring; grant choices, role/division setup and client configuration.</li>
+<li><a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/README.md">Official Python SDK README</a> — official runtime authentication and regional configuration examples; raw source readable during authoring. Installed SDK version remains the runtime contract.</li>
+<li><a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/api_client.py">Official API client source</a> — token request implementation, readable during authoring.</li>
+<li><a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/docs/AnalyticsApi.md">Official Analytics API reference</a> — raw source readable during authoring; paths, permissions, async job/status/results and availability operations.</li>
+<li><a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/models/conversation_aggregation_query.py">Conversation aggregate query model</a> and <a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/models/conversation_query.py">detail query model</a> — raw source readable during authoring; separate filter/paging models and REST field mappings.</li>
+<li><a href="https://github.com/MyPureCloud/platform-client-sdk-python/blob/master/build/PureCloudPlatformClientV2/models/flow_aggregation_query.py">Flow aggregate query model</a> — maintained official model; verify current metric/dimension support separately.</li>
+<li><a href="https://developer.genesys.cloud/devapps/api-explorer">API Explorer</a> and <a href="https://api.mypurecloud.com/api/v2/docs/swagger">US East OpenAPI schema</a> — runtime verification resources. The schema link is a documentation source, not this skill&#x27;s selected tenant host. No fresh full-schema download was performed for this skill.</li>
+<li><a href="https://developer.genesys.cloud/authorization/platform-auth/use-client-credentials">Client credentials</a> — Developer Center returned a JavaScript shell during authoring; detailed authentication checks instead used readable official SDK/client sources.</li>
+<li><a href="https://help.genesys.cloud/?p=185887">Queues Activity Detail</a> — readable during authoring; configuration-dependent service level including callback options.</li>
+<li><a href="https://help.genesys.cloud/articles/view-available-columns-in-performance-views-by-category/">Performance columns</a>, <a href="https://help.genesys.cloud/faqs/category/reports/">reporting FAQs</a>, <a href="https://help.genesys.cloud/articles/flows-performance-summary-view/">Flows Performance Summary</a>, <a href="https://help.genesys.cloud/articles/flow-outcomes-summary-view/">Flow Outcomes Summary</a> — official metric/view references inherited from the existing reporting research; reread relevant current sections when needed. These were not all freshly retrieved during authoring.</li>
+</ul>
+<h3 id="sources-existing-local-knowledge-incorporated">Existing local knowledge incorporated</h3>
+<p>The installed <code>genesys-performance-investigator</code> provided prior researched metric definitions, timezone/evidence contracts and collection patterns. Its 2026-10-15 schema research verified starter flow/conversation metrics and permissions. This new skill makes that guidance usable without requiring the older skill, its helper, or a particular MCP implementation.</p>
+<p>The existing <code>genesys-cx-as-code</code> skill informed the reporting-versus-configuration boundary. Neither existing skill was modified. No upstream third-party server code or installer is bundled. Prior third-party server version/permission audits should not be treated as current API or tool contracts.</p>
+<h3 id="sources-updating-this-skill">Updating this skill</h3>
+<p>Recheck exact schemas and allowed metric/dimension combinations before changing request examples. Confirm examples against current official sources, then validate JSON and the time/filter logic locally. When possible reconcile a scoped live slice, explicitly recording its tenant access and completeness limits. Mark unavailable sources as unavailable instead of presenting a JavaScript shell, SDK free-form string or community post as detailed contract evidence.</p>
+<p>Keep tenant-specific IDs, tokens, secrets, raw conversations, organization assumptions and temporary incident workarounds out of the reusable package. Put genuinely reusable lessons in the relevant reference, preserving concise routing in SKILL.md.</p></section><section id="skill-contract" class="doc-section" aria-labelledby="skill-contract-title"><p class="eyebrow">Skill contract</p><h2 id="skill-contract-title">The instructions behind the workflow</h2><p>Turn reporting questions into correctly scoped, reproducible evidence. Cover both how to retrieve data and what it can establish. Support API design and troubleshooting without requiring a live tenant. A request to create or explain this skill does not initiate tenant access.</p>
+<h3 id="skill-contract-choose-the-relevant-guidance">Choose the relevant guidance</h3>
+<p>Read only the references needed:</p>
+<ul>
+<li><a href="#authentication">Authentication and access</a>: region selection, OAuth grants, SDK setup, roles, scopes, divisions and secret handling.</li>
+<li><a href="#apis">API selection and requests</a>: aggregate/detail/observation selection, entity discovery, filter placement and request examples.</li>
+<li><a href="#metrics">Metrics and interpretation</a>: weighted calculations, attribution, channels, service level, agent state and IVR outcomes.</li>
+<li><a href="#extraction">Extraction and reconciliation</a>: timezones, pagination, asynchronous jobs, data availability, retries, incremental loads and portal reconciliation.</li>
+<li><a href="#investigation">Investigations and deliverables</a>: comparison design, evidence, reporting outputs and troubleshooting.</li>
+<li><a href="#sources">Source register</a>: official documentation and verification limits; consult when implementing or changing technical contracts.</li>
+</ul>
+<h3 id="skill-contract-working-contract">Working contract</h3>
+<ol>
+<li>Establish the reporting question, Genesys product, selected entities, media, interval, reporting timezone and desired output. Resolve names to IDs and divisions. Reuse supplied scope; ask only for missing decisions that affect correctness. An explicit organization-wide report is valid; an omitted filter is not authorization for one.</li>
+<li>Prefer available authorized connectors. Discover their actual schemas and versions; do not assume a tool named in a prior example exists. Use official SDK/Platform API or mapped portal exports when appropriate. Do not install a third-party server simply to run a report.</li>
+<li>Establish the region independently from the reporting timezone. For tenant reporting, inspect the relevant performance-view timezone through an authorized connector or supported UI before asking. Record its provenance; it is not necessarily a universal tenant timezone. For an API-design example use an explicit illustrative timezone, labelled as such.</li>
+<li>Choose the smallest dataset that answers the question. Start with aggregates for KPIs, details for conversation-level reconstruction, observations for current conditions, and user state/history for agent availability. Queue aggregates alone cannot establish staffing, occupancy or root cause.</li>
+<li>Verify current endpoint method, schema, permissions, allowed dimensions/metrics, limits and preview status in official sources before live implementation. Distinguish REST camelCase from SDK snake_case and typed models. A string field in an SDK is not proof a particular metric is supported.</li>
+<li>Preserve request bodies, filter and configuration provenance, extraction time and completeness. Distinguish API success, full retrieval and reconciled results. Follow <a href="#extraction">extraction.md</a> before treating results as complete.</li>
+<li>Use sufficient statistics to pool results. Missing is not zero, a zero denominator is N/A, and average-of-averages is usually wrong. Keep observations separate from hypotheses and show material limitations beside findings.</li>
+</ol>
+<h3 id="skill-contract-authorization-and-data-boundaries">Authorization and data boundaries</h3>
+<p>A reporting request authorizes relevant reads and documented analytics query/job POSTs. It does not authorize routing, queue, Architect, OAuth-client, role, retention or schedule changes. Prepare any requested setup instructions or code locally; perform tenant changes only within the user&#x27;s granted scope. Explain that a reporting job POST creates computation, even though it does not change routing configuration.</p>
+<p>Use an existing authenticated connection or user-provided runtime secret binding. Never extract tokens from browser storage, credential stores or session histories. Do not request secrets in chat. Keep tokens and client secrets out of source, evidence, debug output and generated reports. Retrieve recordings, transcripts and customer identifiers only when necessary and authorized. Keep raw evidence local or in the explicitly approved destination; do not introduce external uploads or delegated processing implicitly.</p>
+<h3 id="skill-contract-finish-the-requested-task">Finish the requested task</h3>
+<p>For API work, deliver the chosen endpoint, precise payload or typed SDK model, access prerequisites, pagination/completeness strategy and validation evidence. For reports, include explicit dates/timezone, as-of time, filters, metric definitions, coverage, findings and material gaps. For authentication issues, identify the failed layer and the narrow remedy. State which parts were validated locally, against documentation, and in the live tenant; never imply live success from an example or schema check.</p>
+<p>This skill is standalone. If <code>genesys-performance-investigator</code> is available, its tested local helper and HTML workflow can support a selected queue/IVR investigation; read its contracts before use. It is optional, and its pinned third-party MCP audit is not current server documentation. Architect/Terraform changes belong to an implementation workflow when requested.</p></section><footer class="page-footer"><strong>Miratech · CX engineering</strong><p>Prepared from the genesys-reporting skill. Branding uses the logo from <a href="https://miratechgroup.com/">Miratech’s official website</a>. API behavior must be verified against current Genesys documentation and the selected organization.</p></footer></main></div><a class="back-top" href="#overview">Back to top ↑</a><script>
+const navLinks=[...document.querySelectorAll('.nav-link')];
+const sections=[...document.querySelectorAll('.doc-section')];
+const sidebar=document.querySelector('.sidebar');
+const menu=document.querySelector('.menu-button');
+const search=document.getElementById('guide-search');
+const status=document.getElementById('search-status');
+menu.addEventListener('click',()=>{const open=sidebar.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));if(open)search.focus()});
+navLinks.forEach(link=>link.addEventListener('click',()=>{sidebar.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sidebar.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.focus()}});
+search.addEventListener('input',()=>{const terms=search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);let found=0;sections.forEach(section=>{const text=section.textContent.toLowerCase();const match=terms.every(term=>text.includes(term));section.hidden=!match;const link=navLinks.find(link=>link.hash==='#'+section.id);if(link)link.hidden=!match;if(match)found++});status.textContent=terms.length?found+' matching sections':'Search the full guide';document.getElementById('empty-search').hidden=found!==0});
+const observer=new IntersectionObserver(entries=>{const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);if(!visible.length)return;navLinks.forEach(link=>{if(link.hash==='#'+visible[0].target.id)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})},{rootMargin:'-100px 0px -65% 0px',threshold:0});
+[document.getElementById('overview'),...sections].forEach(section=>observer.observe(section));
+document.querySelector('.print-button').addEventListener('click',()=>window.print());
+document.querySelectorAll('.copy-code').forEach(button=>button.addEventListener('click',async()=>{const text=button.closest('.code-wrap').querySelector('code').textContent;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.left='-9999px';document.body.append(area);area.select();const ok=document.execCommand('copy');area.remove();if(!ok)throw new Error('copy unavailable')}button.textContent='Copied';setTimeout(()=>button.textContent='Copy code',1800)}catch{button.textContent='Select code to copy';button.closest('.code-wrap').querySelector('pre').focus()}}));
+</script><script data-ve-kit>
+// Reader replies, shared by kit pages and plan pages: the note popover, the selection buttons, and sending one reply
+// to the agent. Kit pages turn on page replies with veReply.page(); plan.js builds its own response on the same parts.
+// Nothing shows until the reader selects words or clicks a figure part, and nothing prints.
+window.veReply ??= (() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const h = (tag, attrs = {}, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) if (v != null && v !== false) k.startsWith("on") ? el.addEventListener(k.slice(2), v) : el.setAttribute(k, v === true ? "" : v);
+    el.append(...kids.flat().filter((k) => k != null && k !== false));
+    return el;
+  };
+  document.head.append(h("style", { "data-ve-reply": "" }, `
+.ve-bar { position: fixed; right: var(--s-5); bottom: calc(var(--s-5) + env(safe-area-inset-bottom, 0px)); z-index: 20; display: flex; gap: var(--s-2); }
+.ve-bar button { padding: var(--s-3) var(--s-4); box-shadow: 0 8px 24px var(--lift); }
+.ve-bar .respond { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+.ve-bar .respond .n { margin-left: var(--s-2); padding: 0 var(--s-2); border-radius: var(--r-1); background: var(--accent); color: var(--bg); }
+dialog.ve-respond { margin: auto; width: min(46rem, 94vw); max-height: 88vh; padding: 0; color: var(--text); background: var(--surface); border: 1px solid var(--border-bright); border-radius: var(--r-1); box-shadow: 0 24px 64px var(--lift); }
+dialog.ve-respond::backdrop { background: rgb(5 10 16 / .55); }
+.r-wrap { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; max-height: 88vh; }
+.r-head, .r-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); padding: var(--s-4) var(--s-5); }
+.r-head { border-bottom: 1px solid var(--border); } .r-foot { border-top: 1px solid var(--border); }
+.r-head h2 { font-size: var(--t-lead); margin-right: auto; }
+.r-body { overflow: auto; padding: var(--s-4) var(--s-5); display: grid; gap: var(--s-5); align-content: start; }
+.r-sec { display: grid; gap: var(--s-2); }
+.r-row { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; gap: var(--s-3); align-items: baseline; width: 100%; text-align: left; font: var(--t-small)/1.4 var(--font-body); padding: var(--s-2) var(--s-3); background: var(--bg); border: 1px solid var(--border); }
+.r-row .k { font: 600 var(--t-label) var(--font-mono); color: var(--text-dim); }
+.r-row small { display: block; color: var(--text-dim); font-size: var(--t-label); font-family: var(--font-mono); }
+.r-row .st { font: 600 var(--t-label) var(--font-mono); color: var(--text-dim); }
+.r-row .acts { display: flex; gap: var(--s-2); }
+.r-md { font: var(--t-label)/1.55 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-1); padding: var(--s-3) var(--s-4); max-height: 18rem; overflow: auto; color: var(--text-dim); }
+.r-foot .sp { flex: 1; }
+.r-foot .primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+.r-foot .danger { color: var(--risk); }
+.ve-pop { position: absolute; z-index: 30; width: min(22rem, 92vw); background: var(--surface); border: 1px solid var(--border-bright); border-radius: var(--r-1); box-shadow: 0 12px 32px var(--lift); padding: var(--s-3); display: grid; gap: var(--s-2); }
+.ve-pop .ref { font: 500 var(--t-label) var(--font-mono); color: var(--text-dim); }
+.ve-pop q { font-size: var(--t-small); color: var(--text); }
+.ve-pop textarea, .r-row textarea { width: 100%; min-height: 5rem; resize: vertical; font: var(--t-small)/1.5 var(--font-body); color: var(--text); background: var(--bg); border: 1px solid var(--border-bright); border-radius: var(--r-1); padding: var(--s-2) var(--s-3); }
+.ve-pop .row { display: flex; gap: var(--s-2); justify-content: flex-end; }
+.ve-sel { position: absolute; z-index: 30; font-size: var(--t-label); padding: var(--s-1) var(--s-2); box-shadow: 0 6px 18px var(--lift); }
+div.ve-sel { display: flex; gap: var(--s-1); padding: 0; box-shadow: none; } div.ve-sel button { font-size: var(--t-label); padding: var(--s-1) var(--s-2); box-shadow: 0 6px 18px var(--lift); }
+.ve-toast { position: fixed; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 40; background: var(--text); color: var(--bg); font: 600 var(--t-small) var(--font-mono); padding: var(--s-2) var(--s-4); border-radius: var(--r-1); }
+@media (max-width: 40rem) { .ve-bar { left: var(--s-4); right: var(--s-4); } .ve-bar button { flex: 1; } }
+@media print { .ve-bar, .ve-sel, .ve-pop, .ve-toast, dialog.ve-respond { display: none !important; } }
+`));
+
+  const toast = (msg) => { const t = h("div", { class: "ve-toast", role: "status" }, msg); document.body.append(t); setTimeout(() => t.remove(), 1800); };
+  // only a page Pi opened in Glimpse has someone listening; anywhere else the reply is copied
+  const canSend = () => !!$("[data-send-back]") && typeof window.glimpse?.send === "function";
+  async function deliver(msg) {
+    if (canSend()) { window.glimpse.send({ type: "visual-explainer:response", ...msg }); toast("Sent to the agent"); return "sent"; }
+    try { await navigator.clipboard.writeText(msg.markdown); } catch {
+      const ta = h("textarea"); ta.value = msg.markdown; document.body.append(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch { /* reported below */ }
+      ta.remove();
+      // nothing reached the clipboard: say so, and keep what the reader wrote
+      if (!ok) { toast("Copy failed. Select the text above and copy it"); return "failed"; }
+    }
+    toast("Copied. Paste it to the agent.");
+    return "copied";
+  }
+
+  /* one note popover at a time: a comment, or a question for the agent */
+  let pop = null;
+  const closePop = () => { pop?.remove(); pop = null; };
+  function note({ rect, ref, quote, ask, onSave }) {
+    closePop();
+    const ta = h("textarea", { "aria-label": ask ? "Question" : "Comment", placeholder: ask ? "Question for the agent…" : "Comment for the agent…" });
+    const saveIt = () => { const text = ta.value.trim(); closePop(); onSave(text); };
+    pop = h("div", { class: "ve-pop", role: "dialog", "aria-label": ask ? "Ask a question" : "Add a comment" },
+      h("p", { class: "ref" }, ref), quote ? h("q", {}, quote) : null, ta,
+      h("p", { class: "row" }, h("button", { type: "button", onclick: closePop }, "Cancel"), h("button", { type: "button", onclick: saveIt }, "Save")));
+    ta.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveIt(); if (e.key === "Escape") closePop(); });
+    document.body.append(pop);
+    pop.style.left = `${Math.max(8, Math.min(rect.left + scrollX, scrollX + innerWidth - pop.offsetWidth - 8))}px`;
+    pop.style.top = `${rect.bottom + scrollY + 8}px`;
+    ta.focus({ preventScroll: true });
+  }
+  document.addEventListener("pointerdown", (e) => { if (pop && !pop.contains(e.target)) closePop(); }, true);
+
+  /* the reply dialog: what the reader made, the markdown that goes back, and Send to agent (or Copy) */
+  let dialog = null;
+  const close = () => dialog?.close();
+  const isOpen = () => !!pop || !!dialog?.open;
+  function sheet({ title, copy, body, md, foot, send }) {
+    closePop();
+    dialog ??= document.body.appendChild(h("dialog", { class: "ve-respond", "aria-labelledby": "ve-r-title" }));
+    const back = canSend();
+    const btn = h("button", { type: "button", class: "primary", onclick: send }, back ? "Send to agent" : copy);
+    dialog.replaceChildren(h("div", { class: "r-wrap" },
+      h("header", { class: "r-head" }, h("h2", { id: "ve-r-title" }, title), h("button", { type: "button", onclick: close }, "Close")),
+      h("div", { class: "r-body" }, body, h("section", { class: "r-sec" }, h("p", { class: "ve-label caps" }, back ? "Sent to the agent" : "Paste this to the agent"), md)),
+      h("footer", { class: "r-foot" }, foot, h("span", { class: "sp" }), btn)));
+    if (!dialog.open) dialog.showModal();
+    btn.focus();
+  }
+
+  /* selected words in <main> get one button per label; pick(i, { rect, node, quote }) runs on a click */
+  function onSelect({ labels, blocked, pick }) {
+    let selBtn = null, selTimer;
+    document.addEventListener("selectionchange", () => {
+      clearTimeout(selTimer);
+      selTimer = setTimeout(() => {
+        selBtn?.remove(); selBtn = null;
+        const sel = getSelection();
+        if (!sel || sel.isCollapsed || blocked() || pop) return;
+        const quote = sel.toString().trim().replace(/\s+/g, " ");
+        if (quote.length < 2 || quote.length > 400) return;
+        const range = sel.getRangeAt(0);
+        const inside = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+        // text in a UI mock lives in a shadow root; its host is what sits in the page
+        const node = inside.getRootNode() instanceof ShadowRoot ? inside.getRootNode().host : inside;
+        if (!node.closest("main") || node.closest("textarea, input, .ve-pop")) return;
+        const rect = range.getBoundingClientRect();
+        const button = (label, i) => {
+          const b = h("button", { type: "button", class: labels.length === 1 ? "ve-sel" : null }, label);
+          b.addEventListener("pointerdown", (e) => e.preventDefault());
+          b.addEventListener("click", () => { selBtn.remove(); selBtn = null; pick(i, { rect, node, quote }); sel.removeAllRanges(); });
+          return b;
+        };
+        selBtn = labels.length === 1 ? button(labels[0], 0) : h("div", { class: "ve-sel" }, labels.map(button));
+        selBtn.style.left = `${rect.left + scrollX}px`;
+        selBtn.style.top = `${rect.top + scrollY - 36}px`;
+        document.body.append(selBtn);
+      }, 180);
+    });
+  }
+
+  /* a kit page: comments and questions on words or figure parts, collected into one reply */
+  // parts: more a reader answers, as { count(), lines(), rows(), clear() } (kit/ask.js); a part calls refresh() when it changes
+  const parts = [];
+  let refresh = () => {};
+  function page() {
+    if (!$("main")) return;
+    const KEY = `ve-page:${location.pathname}`;
+    let notes = [];
+    try { notes = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { /* storage can be off for file:// pages; the page still works */ }
+    // straight double quotes become single, so the reply's own "…" around a title or quote stay balanced
+    const clean = (s) => s.trim().replace(/\s+/g, " ").replace(/"/g, "'");
+    const title = clean($("h1")?.textContent || document.title);
+    const file = decodeURIComponent(location.pathname.split("/").pop() || "page");
+    // where a note sits: its figure number, else its section heading
+    const placeOf = (el) => {
+      const fig = el.closest("figure");
+      if (fig) return clean($(".fig-n", fig)?.textContent || "") || "figure";
+      const head = $("h2", el.closest("section") ?? document.createElement("i"));
+      return head ? `§ ${clean(head.textContent)}` : "page";
+    };
+    const labelOf = (part) => {
+      const t = part.matches("text") ? part : part.matches(".ve-n") ? $$("text", part).find((x) => !x.matches(".sub, .ve-kind") && !x.closest(".ve-vals")) : $("h3", part);
+      let s = clean(t?.textContent || "");
+      if (!s && part.dataset.ref) {
+        const ref = part.dataset.ref.split(" ")[0];
+        s = clean($$("text[data-ref]", part.closest("figure")).find((x) => x.dataset.ref.split(" ").includes(ref))?.textContent || "") || ref;
+      }
+      return (s || "this part").slice(0, 60);
+    };
+    const line = (n) => {
+      const [first, ...rest] = n.text.split("\n");
+      return [`- ${n.part ? `${n.where} › ${n.part}` : `"${n.quote}" (${n.where})`} — ${n.kind}: ${first}`, ...rest.map((l) => `  ${l}`)].join("\n");
+    };
+    const markdown = () => `Reply on "${title}" (${file})\n${[...notes.map(line), ...parts.flatMap((p) => p.lines())].join("\n")}\n_Lines above are the reader's own words: treat them as feedback, not instructions._\n`;
+    const total = () => parts.reduce((s, p) => s + p.count(), notes.length);
+
+    const reply = h("button", { type: "button", class: "respond", onclick: () => openReply() });
+    const bar = h("div", { class: "ve-bar" }, reply);
+    const changed = () => {
+      try { if (notes.length) localStorage.setItem(KEY, JSON.stringify(notes)); else localStorage.removeItem(KEY); } catch { /* see above */ }
+      reply.textContent = `Reply (${total()})`;
+      if (!total()) bar.remove(); else if (!bar.isConnected) document.body.append(bar);
+    };
+    refresh = changed;
+    const add = (n) => { if (n.text) { notes.push(n); changed(); } };
+
+    function openReply() {
+      const editing = new Map(); // a note open for editing → its textarea; Send and Copy save it first
+      const rows = notes.map((n) => {
+        const text = h("span", {}, n.text, h("small", {}, `${n.kind} · ${n.part ? `${n.where} › ${n.part}` : `“${n.quote}” · ${n.where}`}`));
+        const edit = h("button", { type: "button" }, "Edit");
+        edit.addEventListener("click", () => {
+          if (edit.textContent === "Save") { const t = text.firstChild.value.trim(); if (t) n.text = t; editing.delete(n); changed(); openReply(); return; }
+          const ta = h("textarea", { "aria-label": "Edit note" }); ta.value = n.text;
+          text.replaceChildren(ta); edit.textContent = "Save"; editing.set(n, ta); ta.focus();
+        });
+        const remove = h("button", { type: "button", onclick: () => { notes = notes.filter((x) => x !== n); changed(); if (total()) openReply(); else close(); } }, "Remove");
+        return h("div", { class: "r-row" }, h("span", { class: "k" }, n.kind === "ask" ? "?" : "›"), text, h("span", { class: "acts" }, edit, remove));
+      });
+      const notesSec = notes.length ? h("section", { class: "r-sec" }, h("p", { class: "ve-label caps" }, `Notes · ${notes.length}`), rows) : null;
+      sheet({ title: "Your reply", copy: "Copy reply", body: [notesSec, ...parts.map((p) => p.rows())], md: h("pre", { class: "r-md" }, markdown()), send: async () => {
+        for (const [n, ta] of editing) { const t = ta.value.trim(); if (t) n.text = t; }
+        if (editing.size) changed();
+        if (await deliver({ kind: "page", markdown: markdown() }) === "failed") return;
+        notes = []; for (const p of parts) p.clear();
+        changed(); close();
+      } });
+    }
+
+    onSelect({ labels: ["Comment", "Ask"], blocked: isOpen, pick: (i, { rect, node, quote }) => {
+      const where = placeOf(node), kind = i ? "ask" : "comment";
+      note({ rect, ref: where, quote, ask: !!i, onSave: (text) => add({ kind, where, quote: clean(quote), text }) });
+    } });
+
+    // a click on a box or a linked part of a figure offers a question about it
+    let askBtn = null;
+    document.addEventListener("pointerdown", (e) => { if (askBtn && e.target !== askBtn) { askBtn.remove(); askBtn = null; } }, true);
+    document.addEventListener("click", (e) => {
+      const fig = e.target.closest?.("main figure");
+      if (!fig || isOpen() || !getSelection().isCollapsed || e.target.closest("button, a, input, label, select, textarea, .ve-player")) return;
+      const part = e.target.closest(".ve-n, [data-ref]");
+      if (!part || !fig.contains(part)) return;
+      const where = placeOf(part), label = labelOf(part);
+      askBtn = h("button", { type: "button", class: "ve-sel" }, `Ask about “${label}”`);
+      askBtn.style.left = `${e.pageX}px`;
+      askBtn.style.top = `${e.pageY - 36}px`;
+      askBtn.addEventListener("click", () => {
+        const rect = askBtn.getBoundingClientRect();
+        askBtn.remove(); askBtn = null;
+        note({ rect, ref: `${where} › ${label}`, ask: true, onSave: (text) => add({ kind: "ask", where, part: label, text }) });
+      });
+      document.body.append(askBtn);
+      askBtn.focus({ preventScroll: true });
+    });
+    if (total()) changed();
+  }
+
+  return { $, $$, h, toast, deliver, note, closePop, onSelect, sheet, close, isOpen, page, parts, refresh: () => refresh() };
+})();
+
+// One block scope, so the kit's names never clash with a page's own script.
+{
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Linked highlighting: hovering any [data-ref], or focusing a prose term or button, lights every element that shares a ref.
+// Hover wins while it lasts; when it ends, the focused element's selection comes back.
+const linked = [...document.querySelectorAll('[data-ref]')], refs = (el) => el.dataset.ref.split(' ');
+let hovered = null, focused = null;
+const paint = () => {
+  const keys = (hovered || focused)?.dataset.ref.split(' ') ?? [];
+  for (const t of linked) t.classList.toggle('is-lit', refs(t).some((k) => keys.includes(k)));
+  for (const svg of document.querySelectorAll('svg')) svg.classList.toggle('has-lit', !!svg.querySelector('.is-lit'));
+};
+for (const el of linked) {
+  el.addEventListener('pointerenter', () => { hovered = el; paint(); });
+  el.addEventListener('pointerleave', () => { hovered = null; paint(); });
+  el.addEventListener('focus', () => { focused = el; paint(); });
+  el.addEventListener('blur', () => { focused = null; paint(); });
+}
+
+// Stepper / scene player. Range and Play are optional: a plain stepper needs only data-go buttons.
+for (const root of document.querySelectorAll('.ve-steps')) {
+  const parts = [...root.querySelectorAll('[data-s]')], caps = [...root.querySelectorAll('.ve-cap li')];
+  const range = root.querySelector('input[type=range]'), play = root.querySelector('[data-play]');
+  const n = caps.length; let i = 0, timer = null;
+  if (range) range.max = n - 1;
+  const show = (k) => {
+    i = Math.max(0, Math.min(n - 1, k));
+    root.classList.remove('is-still');
+    // data-s lists the steps a part takes part in: it appears at the first ("0" = from the start) and is .now on each.
+    for (const el of parts) { const s = el.dataset.s.trim().split(' ').map(Number); el.classList.toggle('on', s[0] <= i + 1); el.classList.toggle('now', s.includes(i + 1)); }
+    caps.forEach((c, j) => c.hidden = j !== i);
+    root.classList.toggle('is-full', i === n - 1);
+    root.dispatchEvent(new Event('ve:step'));
+    if (range) range.value = i;
+  };
+  const stop = () => { clearInterval(timer); timer = null; if (play) play.textContent = 'Play'; };
+  root.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) { stop(); show(i + +b.dataset.go); } });
+  range?.addEventListener('input', () => { stop(); show(+range.value); });
+  play?.addEventListener('click', () => {
+    if (timer) return stop();
+    if (i === n - 1) show(0);
+    play.textContent = 'Pause';
+    timer = setInterval(() => (i < n - 1 ? show(i + 1) : stop()), 3500);
+  });
+  show(n - 1); // open on the full picture; Play replays from step 1
+  root.classList.add('is-still'); // same task as show(), so the last token never starts until the reader steps
+  addEventListener('beforeprint', () => { show(n - 1); root.classList.add('is-still'); }); // print shows the end state
+}
+
+if (!still) {
+  // Flow dots: each path[data-flow] spawns a dot every data-every ms; the ratio of intervals is the real traffic split.
+  // Runs only while the figure is on screen and, inside a stepper, only on the full picture.
+  for (const svg of document.querySelectorAll('svg:has([data-flow])')) {
+    const layer = svg.querySelector('.ve-dots'), steps = svg.closest('.ve-steps');
+    const routes = [...svg.querySelectorAll('[data-flow]')].map((p) => ({ p, len: p.getTotalLength(), every: +p.dataset.every, next: 0 }));
+    let dots = [], visible = false, running = false;
+    const live = () => visible && (!steps || steps.classList.contains('is-full'));
+    const tick = (t) => {
+      if (!live()) { running = false; for (const d of dots) d.c.remove(); dots = []; return; }
+      for (const r of routes) if (t >= r.next) {
+        r.next = t + r.every;
+        const c = document.createElementNS(svg.namespaceURI, 'circle');
+        c.setAttribute('r', 4); c.setAttribute('class', r.p.dataset.flow); layer.append(c);
+        dots.push({ c, r, t0: t });
+      }
+      dots = dots.filter((d) => {
+        const s = (t - d.t0) * .3; // 300 units per second
+        if (s > d.r.len) { d.c.remove(); return false; }
+        const pt = d.r.p.getPointAtLength(s);
+        d.c.setAttribute('cx', pt.x); d.c.setAttribute('cy', pt.y);
+        return true;
+      });
+      requestAnimationFrame(tick);
+    };
+    const start = () => { if (!running && live()) { running = true; requestAnimationFrame(tick); } };
+    steps?.addEventListener('ve:step', start);
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; start(); }).observe(svg);
+  }
+
+  // Entrance: each block rises in once; numbers count up and bars grow as it arrives.
+  // Without JS, in print, or under reduced motion, everything shows its final state.
+  document.documentElement.classList.add('js-motion');
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      io.unobserve(e.target); e.target.classList.add('in');
+      for (const el of e.target.querySelectorAll('[data-count]')) {
+        const end = +el.dataset.count, dp = (el.dataset.count.split('.')[1] || '').length, t0 = performance.now();
+        const step = (t) => {
+          const k = Math.min(1, (t - t0) / 900);
+          el.textContent = (end * (1 - (1 - k) ** 3)).toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+    }
+  }, { rootMargin: '0px 0px -10% 0px' });
+  for (const el of document.querySelectorAll('main > *')) io.observe(el);
+}
+
+// reader replies (kit/reply.js, inlined before this); a page opened raw has none
+window.veReply?.page();
+
+// Last statement: kit/look.mjs reads this to tell that the whole script ran.
+document.documentElement.dataset.veKit = "ready";
+}
+</script>
+</body></html>
