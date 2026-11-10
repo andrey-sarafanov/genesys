@@ -1,0 +1,4 @@
+interface:
+  display_name: "Genesys Performance Investigator"
+  short_description: "Queue and IVR analytics with local HTML reports"
+  default_prompt: "Use $genesys-performance-investigator to investigate my selected queues or IVR flows since last Monday, discover the reporting timezone in Genesys Cloud, and build an evidence-based local HTML report."

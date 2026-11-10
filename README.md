@@ -1,32 +1,76 @@
-# Genesys Cloud skill library — Miratech
+# Genesys skills · Miratech
 
-Detailed, self-contained HTML guides for the Genesys-specific skills installed in the reviewed environment.
+Read the documentation, inspect the source, then install the skills you need.
 
-| Guide | Purpose | File |
-|---|---|---|
-| Skill catalogue | Choose a skill and navigate the collection | [catalog.html](catalog.html) |
-| Genesys Reporting | OAuth, Analytics APIs, metrics and pipelines | [index.html](index.html) |
-| CX as Code | Terraform, Architect YAML, IVR, bots and messaging | [genesys-cx-as-code.html](genesys-cx-as-code.html) |
-| Performance Investigator | Selected queue/IVR investigations and offline reports | [genesys-performance-investigator.html](genesys-performance-investigator.html) |
+**[Start here](docs/README.md)** · **[Install](docs/installation.md)** · **[Browse skill source](skills/)** · **[Troubleshooting](docs/installation.md#troubleshooting)**
 
-## Read the guides
+## Choose a skill
 
-Download the HTML files together and open `catalog.html` in a modern browser. GitHub displays HTML source rather than rendering the guide within its repository viewer. Each detailed guide supports section search, persistent navigation, a mobile contents menu, copyable code and print styling. No build step or external asset request is required.
+| Skill | Use it for | Read the guide | Inspect instructions |
+|---|---|---|---|
+| **Genesys Reporting** | OAuth, Analytics APIs, metrics and extraction pipelines | [Documentation](docs/genesys-reporting.md) | [SKILL.md](skills/genesys-reporting/SKILL.md) |
+| **CX as Code** | IVR, voicebots, Web Messaging, SMS and WhatsApp | [Documentation](docs/genesys-cx-as-code.md) | [SKILL.md](skills/genesys-cx-as-code/SKILL.md) |
+| **Performance Investigator** | Selected queue/IVR investigations and offline reports | [Documentation](docs/genesys-performance-investigator.md) | [SKILL.md](skills/genesys-performance-investigator/SKILL.md) |
 
-## Scope and validation
+## Quick install
 
-Prepared November 6, 2026 from the installed skill instructions, reference documents and helper command interfaces. The two additional domain skills are `genesys-cx-as-code` and `genesys-performance-investigator`; generic BA, architecture and QA skills are not relabelled as Genesys skills.
+Requires Git and Python 3.10 or newer. Run these commands in your terminal:
 
-Documentation and local checks do not prove live authentication, data completeness or deployment readiness. No live Genesys queries or flow deployments were performed for this collection. Historical provider/schema audits retain their original dates and are not current-version guarantees.
+```sh
+git clone https://github.com/andrey-sarafanov/genesys.git
+cd genesys
+python install.py --list
+python install.py --dry-run
+python install.py
+```
 
-Miratech branding uses the logo from https://miratechgroup.com/. All HTML guides include links to their corresponding downloadable skill packages.
+On Windows, use `py -3` if `python` is not available; on macOS/Linux, `python3` may be the command name. The installer copies all three skill folders to `~/.agents/skills`. It does not overwrite existing installations, run skill helpers or contact Genesys. Use `--skill` to select one skill and `--dest` for a different configured directory.
 
-## Download the skills
+```sh
+python install.py --skill genesys-reporting
+```
 
-Packaged November 10, 2026. Each ZIP preserves the complete skill folder, references, helpers and assets where supplied, including license notices. Bytecode caches are excluded.
+Prefer asking your agent to install? Paste this into Codex:
 
-- [genesys-reporting.zip](genesys-reporting.zip) — 8 files; invoke `$genesys-reporting` after placing the extracted folder in your configured skills directory.
-- [genesys-cx-as-code.zip](genesys-cx-as-code.zip) — 21 files; invoke `$genesys-cx-as-code` after placing the extracted folder in your configured skills directory.
-- [genesys-performance-investigator.zip](genesys-performance-investigator.zip) — 11 files; invoke `$genesys-performance-investigator` after placing the extracted folder in your configured skills directory.
+```text
+Use $skill-installer to install the skill from:
+https://github.com/andrey-sarafanov/genesys/tree/main/skills/genesys-reporting
+```
 
-See [skill-packages.json](skill-packages.json) for package sizes and SHA-256 checksums. Extract the top-level skill folder intact. Downloading a package does not execute scripts or connect to Genesys.
+See [installation options](docs/installation.md) for all three links, manual installation, alternate directories and updates. Installation is separate from OAuth setup and live deployment.
+
+## Read in GitHub or in a browser
+
+The Markdown guides above render directly on GitHub. The detailed HTML versions retain Miratech branding, search, navigation, copyable examples and print styling:
+
+- [HTML catalogue](catalog.html)
+- [Reporting HTML](index.html)
+- [CX as Code HTML](genesys-cx-as-code.html)
+- [Performance Investigator HTML](genesys-performance-investigator.html)
+
+GitHub shows HTML source in its file viewer. For the rendered version, clone/download the repository, then open `catalog.html` locally. No web server or build is needed. For the fastest reading experience inside GitHub, start with the Markdown documentation.
+
+## Repository layout
+
+```text
+README.md                 Start here
+install.py                List, preview and install local skills
+skills/<skill>/           Complete, browsable skill source
+  SKILL.md                Skill instructions and trigger description
+  agents/                 UI metadata
+  references/             Task-specific reference material
+  scripts/                Helpers where supplied
+  assets/                 Templates and license notices where supplied
+docs/                     Reading guides and installation help
+*.html                    Detailed offline HTML guides
+*.zip                     Portable skill packages
+skill-packages.json       Archive sizes and SHA-256 checksums
+```
+
+## Scope and licenses
+
+These skills concern **Genesys Cloud**. Runtime prerequisites vary by task; see each guide. They do not include tenant credentials or customer data. Reading/installing does not authorize live queries, routing changes or flow publication.
+
+Retain the notices in [CX as Code assets](skills/genesys-cx-as-code/assets/). Do not assume one blanket license applies to all third-party material. The optional server discussed in the Performance Investigator research has its own licensing; it is not bundled or required.
+
+Skill source is the maintained, readable form. ZIPs are portable copies of those same folders. See [official OpenAI skill documentation](https://learn.chatgpt.com/docs/build-skills) for current discovery locations and client behavior.

@@ -1,0 +1,191 @@
+# Author: Andrey Sarafanov @ Miratech inc
+digitalBot:
+  name: '{{flow_name}}'
+  description: ''
+  division: '{{division_name}}'
+  startUpRef: /digitalBot/bots/bot[Initial Greeting_10]
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+  settingsErrorHandling:
+    errorHandling:
+      exit:
+        none: true
+    enableAgentEscalation:
+      lit: true
+    errorEventHandover:
+      exp: ToCommunication("Sorry, an error occurred. One moment, please, while I
+        put you through to someone who can help.")
+    agentEscalationConfirmation:
+      exp: ToCommunication("You want to speak to an advisor. Is that correct?")
+    agentEscalationHandover:
+      exp: ToCommunication("One moment, please, and I will put you through to someone.")
+    recognitionFailureEventHandover:
+      exp: ToCommunication("Sorry, I'm having trouble understanding you. One moment,
+        please, while I put you through to someone who can help.")
+    recognitionFailureEventHandling:
+      exit:
+        none: true
+    agentEscalationHandling:
+      exit:
+        none: true
+  settingsBotFlow:
+    none: true
+  settingsUserInput:
+    noMatchesMax:
+      lit: 3
+    noInputsMax:
+      lit: 3
+    noInputsTimeout:
+      lit:
+        minutes: 1
+    endOfSessionMessage:
+      exp: ToCommunication("I have not heard from you in a while, so I am closing
+        this chat, please come back if you need my help again. Thank you.")
+    confirmationRejectionsMax:
+      lit: 3
+    collectionLowConfidenceThreshold:
+      lit: 20
+    collectionHighConfidenceThreshold:
+      lit: 70
+    confirmationLowConfidenceThreshold:
+      lit: 40
+    noMatchApology:
+      exp: ToCommunication("Sorry.")
+    noInputApology:
+      exp: ToCommunication("Sorry, I didn't receive any input from you.")
+    noToConfirmationApology:
+      exp: ToCommunication("My mistake.")
+    confirmationNoMatchApology:
+      exp: ToCommunication("Sorry, please input \"Yes\" or \"No\".")
+    confirmationNoInputApology:
+      exp: ToCommunication("Sorry, I didn't receive any input from you.  Please input
+        \"Yes\" or \"No\".")
+  settingsKnowledge:
+    none: true
+  bots:
+  - bot:
+      name: Initial Greeting
+      refId: Initial Greeting_10
+      actions:
+      - digitalMenu:
+          name: Digital Menu
+          question:
+            exp: ToCommunication("What would you like to do?")
+          noMatch:
+            exp: ToCommunication("Tell me again what you would like to do.")
+          selection:
+            noValue: true
+          knowledgeSearchResult:
+            noValue: true
+          chooser:
+            lit:
+              presentation:
+                lit: quickReplies
+              carousel:
+                lit:
+                  cards:
+                    lit: []
+              quickReplies:
+                lit:
+                  buttons:
+                    lit:
+                    - lit:
+                        label:
+                          noValue: true
+                        value:
+                          lit: Request service
+                        type:
+                          lit: postback
+                    - lit:
+                        label:
+                          noValue: true
+                        value:
+                          lit: Speak to support
+                        type:
+                          lit: postback
+              listPicker:
+                lit:
+                  sections:
+                    lit:
+                    - lit:
+                        title:
+                          lit: ''
+                        multiSelectEnabled:
+                          lit: false
+                        items:
+                          lit: []
+                  receivedMessageImage:
+                    noValue: true
+                  receivedMessageTitle:
+                    lit: ''
+                  receivedMessageSubtitle:
+                    noValue: true
+                  replyMessageImage:
+                    noValue: true
+                  replyMessageSubtitle:
+                    noValue: true
+          outputs:
+            maxNoInputs:
+              enabled: false
+            maxNoMatches:
+              enabled: false
+            paths:
+            - path:
+                name: Request service
+                actions:
+                - transferToAcd:
+                    name: Transfer to ACD
+                    targetQueue:
+                      lit:
+                        name: '{{queue_name}}'
+                    preTransferCommunication:
+                      exp: ToCommunication(NOT_SET)
+                    failureTransferCommunication:
+                      exp: ToCommunication(NOT_SET)
+                    priority:
+                      lit: 0
+                    preferredAgents:
+                      noValue: true
+                    languageSkill:
+                      noValue: true
+                    failureOutputs:
+                      errorType:
+                        noValue: true
+                      errorMessage:
+                        noValue: true
+            - path:
+                name: Speak to support
+                actions:
+                - transferToAcd:
+                    name: Transfer to ACD
+                    targetQueue:
+                      lit:
+                        name: '{{queue_name}}'
+                    preTransferCommunication:
+                      exp: ToCommunication(NOT_SET)
+                    failureTransferCommunication:
+                      exp: ToCommunication(NOT_SET)
+                    priority:
+                      lit: 0
+                    preferredAgents:
+                      noValue: true
+                    languageSkill:
+                      noValue: true
+                    failureOutputs:
+                      errorType:
+                        noValue: true
+                      errorMessage:
+                        noValue: true
+      - disconnect:
+          name: Disconnect
+  settingsNaturalLanguageUnderstanding:
+    nluDomainVersion:
+      intents: []
+      entities: []
+      entityTypes: []
+      language: en-us
+      languageVersions: {}
+    mutedUtterances: []

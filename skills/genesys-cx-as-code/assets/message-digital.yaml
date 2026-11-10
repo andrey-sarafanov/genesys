@@ -1,0 +1,34 @@
+# Author: Andrey Sarafanov @ Miratech inc
+inboundShortMessage:
+  name: '{{flow_name}}'
+  description: ''
+  division: '{{division_name}}'
+  startUpRef: /inboundShortMessage/states/state[Initial State_11]
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+  settingsErrorHandling:
+    errorHandling:
+      disconnect:
+        none: true
+  states:
+  - state:
+      name: Initial State
+      refId: Initial State_11
+      actions:
+      - callDigitalBotFlow:
+          name: Call Digital Bot Flow
+          inputText:
+            exp: Message.Message.body
+          exitReason:
+            noValue: true
+          intent:
+            noValue: true
+          digitalBotFlow:
+            '{{bot_flow_name}}':
+              ver_latestPublished:
+                none: true
+      - disconnect:
+          name: Disconnect

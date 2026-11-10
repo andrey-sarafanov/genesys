@@ -1,0 +1,4 @@
+interface:
+  display_name: "Genesys Cloud Reporting"
+  short_description: "Genesys analytics, APIs, OAuth and reporting"
+  default_prompt: "Use $genesys-reporting to plan and validate a Genesys Cloud reporting task, including authentication, API queries and metric interpretation."

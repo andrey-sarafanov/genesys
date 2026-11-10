@@ -1,0 +1,21 @@
+# Author: Andrey Sarafanov @ Miratech inc
+inboundShortMessage:
+  name: '{{flow_name}}'
+  division: '{{division_name}}'
+  startUpRef: ./states/state[entry]
+  defaultLanguage: en-us
+  supportedLanguages:
+    en-us:
+      defaultLanguageSkill:
+        noValue: true
+  settingsErrorHandling:
+    errorHandling:
+      disconnect:
+        none: true
+  states:
+  - state:
+      name: Message entry
+      refId: entry
+      actions:
+      - disconnect:
+          name: End example message

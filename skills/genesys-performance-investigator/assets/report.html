@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root{--ink:#20344b;--muted:#52677a;--paper:#fff;--wash:#edf3f8;--blue:#175f96;--plum:#80507e;--teal:#237c77;--line:#c6d4df;--warn:#7a4505}
+*{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.55 Avenir,"Segoe UI",sans-serif}header{background:var(--ink);color:white;padding:35px max(24px,calc((100vw - 1400px)/2)) 30px;border-bottom:7px solid #5897bc}header p{color:#d7e5ef;margin:8px 0;max-width:95ch}h1{font-size:clamp(29px,3.3vw,44px);font-weight:650;letter-spacing:-1px;line-height:1.15;margin:5px 0 18px}h2{font-size:24px;margin:0 0 14px}h3{font-size:19px;margin:0 0 8px}main{max-width:1448px;margin:auto;padding:24px}section{background:var(--paper);padding:25px;margin-bottom:22px;border:1px solid var(--line);border-radius:5px}.filters{display:flex;gap:16px;flex-wrap:wrap;background:#e1ebf2;border:none}.filters label{display:grid;gap:4px;font-size:14px;font-weight:650;flex:1;min-width:170px}select,button{font:inherit;padding:10px;border:1px solid #849daf;border-radius:4px;background:white;color:var(--ink)}button{cursor:pointer}button:hover{background:var(--wash)}:focus-visible{outline:3px solid #bd6d1b;outline-offset:3px}.muted{color:var(--muted);font-size:14px}.warning{border-left:5px solid #b16d1f;background:#fff5e8;padding:14px 18px;color:var(--warn)}.demo{background:#fff3aa;color:#4c3900;font-weight:750;padding:15px 24px}.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(270px,1fr);gap:22px}.grid section{min-width:0}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}th,td{text-align:right;padding:11px 12px;border-bottom:1px solid #dce5eb;white-space:nowrap}th{color:var(--muted);font-weight:650;background:#f1f6fa}th:first-child,td:first-child{text-align:left}td.name{text-align:left;white-space:normal;min-width:140px}tbody tr:hover{background:#f5f8fa}.chart{overflow:auto;min-height:160px}.chart svg{display:block;min-width:540px;width:100%;height:auto}.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:14px}.swatch{display:inline-block;width:12px;height:12px;margin-right:5px;border-radius:2px}.finding{border-left:4px solid var(--blue);padding:8px 0 8px 18px;margin-bottom:22px}.finding p{margin:6px 0;max-width:95ch}.tag{display:inline-block;background:#e7eff5;color:#254f72;padding:2px 8px;font-size:13px;border-radius:4px}.definitions{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}.definitions p{margin:0;font-size:14px}.definitions strong{display:block;font-size:15px;margin-bottom:6px}summary{cursor:pointer;font-weight:650}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;max-height:380px;overflow:auto}details{margin:12px 0}ul{padding-left:22px}.bar{fill-opacity:.9}.bar:hover{fill-opacity:1}.controls{display:flex;gap:12px;margin-top:18px}.empty{padding:25px;background:var(--wash)}footer{font-size:13px;color:var(--muted);padding:0 8px 30px}noscript{display:block;padding:24px;background:#fff3aa}
+@media(max-width:760px){main{padding:12px}.grid{grid-template-columns:1fr}section{padding:17px}.filters{gap:10px}header{padding:25px 20px}h1{letter-spacing:-.5px}}
+@media print{body{background:white;font-size:11px}header{color:black;background:white;padding:10px;border-bottom:2px solid black}header p{color:black}.filters,.controls{display:none}main{padding:0}.grid{display:block}section{break-inside:avoid;border:0;padding:10px}.table-wrap{overflow:visible}table{font-size:9px}th,td{padding:4px;white-space:normal}.chart svg{min-width:0}details{display:block}}
+</style></head><body>
+<div id="demo"></div><header><h1>__TITLE__</h1><p id="scope"></p><p id="timing"></p></header>
+<noscript>This offline report requires JavaScript for filters, charts and tables. Source data remains embedded in this file.</noscript>
+<main>
+<section id="limitations" aria-label="Data limitations"></section>
+<section class="filters" aria-label="Report filters">
+<label>Dataset / granularity<select id="dataset"></select></label>
+<label>Queue or flow<select id="entity"></select></label>
+<label>Media<select id="media"></select></label>
+<label>Metric<select id="metric"></select></label>
+</section>
+<div class="grid"><section><h2 id="chart-title">Performance by interval</h2><p class="muted" id="chart-note"></p><div class="chart" id="chart"></div><div class="legend" id="legend"></div></section>
+<section><h2>Period summary</h2><p class="muted">Weighted from available buckets within each entity, media and dimension group. N/A means the required statistic is missing or its denominator is zero. Coverage gaps still apply.</p><div class="table-wrap" id="summary"></div></section></div>
+<section><h2>Interval detail</h2><p class="muted" id="detail-note"></p><div class="table-wrap" id="table"></div><div class="controls"><button id="csv">Export visible rows as CSV</button><button id="print">Print this view</button></div></section>
+<section><h2>Interpretation and next tests</h2><p class="muted">Analyst findings apply to the explicitly cited scope, independently of the filters above. Hypotheses remain provisional until their tests support them.</p><div id="findings"></div></section>
+<section><h2>Reading the measures</h2><div class="definitions">
+<p><strong>Volume and attribution</strong>Offers count queue workload, including repeat offers and transfers. Flow counts represent executions. Neither establishes unique customers; separate aggregates do not form a customer funnel.</p>
+<p><strong>Service level</strong>Uses Genesys oServiceLevel and the organization's configured denominator. Combined SL needs numerator and denominator. Averaging percentages is incorrect.</p>
+<p><strong>ASA and AHT</strong>ASA uses time-to-answer sum / answered count. AHT uses handle-time sum / handled count. Durations are converted from milliseconds to seconds. These populations differ.</p>
+<p><strong>Daily changes</strong>Only adjacent complete local days receive deltas. Rate changes are percentage points; other metrics show absolute changes. Partial days and uncertain source coverage are excluded.</p>
+<p><strong>Channel differences</strong>Media stay separate. Callback queue aggregates do not measure callback reach or bridge success. Voice abandonment assumptions must not be applied to web messaging.</p>
+<p><strong>Timing and completeness</strong>Offers, answers and completed handles can appear in different intervals. Missing buckets remain gaps; omitted metrics remain N/A. No staffing or root cause is inferred from aggregates alone.</p>
+</div></section>
+<section><h2>Evidence and coverage</h2><p id="timezone-source"></p><div id="sources"></div></section>
+<footer>Local analytical artifact. No external scripts, fonts or tracking. Raw source hashes identify the files used; they do not certify source completeness.</footer>
+</main>
+<script id="report-data" type="application/json">__DATA__</script>
+<script>
+'use strict';
+const D=JSON.parse(document.getElementById('report-data').textContent), $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=v=>v===null||v===undefined?'N/A':Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
+const colors=['#175f96','#80507e','#237c77','#ab6026','#586ba5','#755b43'];
+const list=v=>Array.isArray(v)?v.join('; '):String(v??'');
+const groupName=r=>r.name+(Object.keys(r.dimensions).length?' / '+Object.entries(r.dimensions).map(([k,v])=>k+': '+v).join(', '):'');
+const seriesKey=r=>r.entity_id+'|'+r.media+'|'+r.dimension_key;
+function options(id,items){$(id).replaceChildren(...items.map(([value,label])=>{const o=document.createElement('option');o.value=value;o.textContent=label;return o;}));}
+if(D.demo)$('demo').innerHTML='<div class="demo">Synthetic demonstration only — no live tenant data or operational findings.</div>';
+$('scope').textContent=D.entities.map(e=>e.name+' ('+e.kind+')').join(' • ');
+$('timing').textContent=D.local_window+' | '+D.timezone+' | Extracted '+D.as_of;
+$('timezone-source').textContent='Reporting timezone: '+D.timezone+'. Source: '+D.timezone_source;
+$('limitations').innerHTML=D.issues.length?'<h2>Coverage needs attention</h2><ul>'+D.issues.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<h2>Coverage</h2><p>All input datasets are labelled complete by the collector. Validate against the portal before relying on the findings.</p>';
+if(D.issues.length)$('limitations').classList.add('warning');
+$('sources').innerHTML=D.sources.map(s=>'<details><summary>'+esc(s.id+' · '+s.kind+' · '+s.granularity+' · '+s.slice+' · '+s.coverage)+'</summary><pre>'+esc(JSON.stringify(s,null,2))+'</pre></details>').join('');
+$('findings').innerHTML=D.findings.length?D.findings.map(f=>'<article class="finding"><h3>'+esc(f.observation)+'</h3><p><span class="tag">Hypothesis · '+esc(f.confidence)+'</span> '+esc(f.hypothesis)+'</p><p><strong>Alternatives:</strong> '+esc(list(f.alternatives))+'</p><p><strong>Next test:</strong> '+esc(f.test)+'</p><p><strong>Owner:</strong> '+esc(f.owner)+'</p><p class="muted"><strong>Evidence:</strong> '+esc(list(f.evidence))+'</p></article>').join(''):'<p class="empty">No analyst hypotheses supplied. Review the evidence before adding explanations; the report does not invent root causes.</p>';
+options('dataset',D.sources.map(s=>[s.id,s.kind+' / '+s.slice+' / '+s.granularity+' / '+s.id]));
+let visible=[];
+function changeDataset(){const rr=D.rows.filter(r=>r.dataset===$('dataset').value);options('entity',[['*','All selected entities'],...Array.from(new Map(rr.map(r=>[r.entity_id,r.name])))]);options('media',[...new Set(rr.map(r=>r.media))].sort().map(x=>[x,x]));const keys=[...new Set(rr.flatMap(r=>Object.keys(r.values)))];options('metric',keys.map(k=>[k,k]));draw();}
+function table(headers,rows){return '<table><thead><tr>'+headers.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(c=>'<tr>'+c.map((v,i)=>'<td'+(i===0?' class="name"':'')+'>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
+function delta(r,all,metric,source){if(source.granularity!=='P1D'||source.coverage!=='complete'||r.partial)return '—';const day=new Date(r.day+'T12:00:00Z');day.setUTCDate(day.getUTCDate()-1);const previous=all.find(x=>seriesKey(x)===seriesKey(r)&&x.day===day.toISOString().slice(0,10)&&!x.partial);const a=r.values[metric],b=previous?.values[metric];return a==null||b==null?'—':(a-b>0?'+':'')+fmt(a-b)+(metric.includes('%')?' pp':'');}
+function draw(){const did=$('dataset').value,metric=$('metric').value,source=D.sources.find(s=>s.id===did);visible=D.rows.filter(r=>r.dataset===did&&($('entity').value==='*'||r.entity_id===$('entity').value)&&r.media===$('media').value);const sr=D.summaries.filter(r=>r.dataset===did&&($('entity').value==='*'||r.entity_id===$('entity').value)&&r.media===$('media').value);
+$('chart-title').textContent=metric||'Performance by interval';$('chart-note').textContent='Each bar is one returned interval. Gaps are not zero. Dashed outlines mark partial intervals. '+(source?.coverage!=='complete'?'Source is '+source?.coverage+'.':'');
+$('detail-note').textContent='Local interval start includes UTC offset. Additional group dimensions remain separate. Daily delta compares only the previous calendar day with complete source coverage.';
+if(!visible.length){for(const id of ['chart','summary','table'])$(id).innerHTML='<p class="empty">No returned data for this selection. Check source coverage.</p>';$('legend').textContent='';return;}
+$('summary').innerHTML=table(['Entity / slice',metric,'Buckets'],sr.map(r=>[groupName(r),fmt(r.values[metric]),r.buckets]));
+const common=source.kind==='queue'?['Offered','Service level %','ASA seconds','AHT seconds']:['Flow executions','Average flow seconds'];const columns=[...new Set([...common,metric])];
+$('table').innerHTML=table(['Interval','Entity / slice',...columns,'Daily delta'],visible.map(r=>[r.local+(r.partial?' (partial)':''),groupName(r),...columns.map(k=>fmt(r.values[k])),delta(r,visible,metric,source)]));
+const keys=[...new Set(visible.map(seriesKey))],times=[...new Set(visible.map(r=>r.start))].sort();const W=Math.max(720,Math.min(6000,times.length*42)),H=300,L=68,T=20,B=65,R=15,plotW=W-L-R,plotH=H-T-B,max=Math.max(1,...visible.map(r=>r.values[metric]??0)),band=plotW/times.length,bw=Math.max(1,(band-7)/keys.length);
+let svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(metric)+' by interval, with exact values in the detail table">';
+for(let i=0;i<=4;i++){const y=T+plotH*(1-i/4);svg+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="#dce5eb"/><text x="'+(L-9)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#52677a">'+esc(fmt(max*i/4))+'</text>';}
+visible.forEach(r=>{const value=r.values[metric];if(value==null)return;const si=keys.indexOf(seriesKey(r)),x=L+times.indexOf(r.start)*band+si*bw+3,h=value/max*plotH,y=T+plotH-h;svg+='<rect class="bar" x="'+x+'" y="'+y+'" width="'+Math.max(1,bw-1)+'" height="'+h+'" fill="'+colors[si%colors.length]+'"'+(r.partial?' stroke="#20344b" stroke-dasharray="3 2"':'')+'><title>'+esc(groupName(r)+' '+r.local+': '+fmt(value))+'</title></rect>';});
+const stride=Math.max(1,Math.ceil(times.length/12));times.forEach((t,i)=>{if(i%stride)return;const row=visible.find(r=>r.start===t),label=source.granularity==='P1D'?row.day:row.local.slice(5,16).replace('T',' ');svg+='<text x="'+(L+i*band+band/2)+'" y="'+(H-B+22)+'" text-anchor="middle" font-size="11" fill="#52677a">'+esc(label)+'</text>';});
+$('chart').innerHTML=svg+'</svg>';$('legend').innerHTML=keys.map((k,i)=>'<span><span class="swatch" style="background:'+colors[i%colors.length]+'"></span>'+esc(groupName(visible.find(r=>seriesKey(r)===k)))+'</span>').join('');}
+$('dataset').addEventListener('change',changeDataset);for(const id of ['entity','media','metric'])$(id).addEventListener('change',draw);$('print').addEventListener('click',()=>window.print());
+$('csv').addEventListener('click',()=>{if(!visible.length)return;const keys=[...new Set(visible.flatMap(r=>Object.keys(r.values)))];const cell=v=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const rows=[['Interval','Entity','Media','Dimensions','Partial',...keys],...visible.map(r=>[r.local,r.name,r.media,JSON.stringify(r.dimensions),r.partial,...keys.map(k=>r.values[k])])];const blob=new Blob([rows.map(r=>r.map(cell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='genesys-visible-slices.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+changeDataset();
+</script></body></html>

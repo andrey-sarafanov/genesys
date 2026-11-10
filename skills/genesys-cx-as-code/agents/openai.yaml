@@ -1,0 +1,5 @@
+# Author: Andrey Sarafanov @ Miratech inc
+interface:
+  display_name: "Genesys CX as Code"
+  short_description: "Build Genesys IVR and multichannel flows and bots"
+  default_prompt: "Use $genesys-cx-as-code to build a customer service flow and bot for my selected Genesys channels."

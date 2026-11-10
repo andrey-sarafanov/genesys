@@ -1,0 +1,32 @@
+# Author: Andrey Sarafanov @ Miratech inc
+inboundCall:
+  name: '{{flow_name}}'
+  division: '{{division_name}}'
+  defaultLanguage: en-us
+  startUpRef: ./tasks/task[entry]
+  initialGreeting:
+    tts: Welcome to the service desk.
+  tasks:
+  - task:
+      name: Start service
+      refId: entry
+      actions:
+      - callBotFlow:
+          name: Call Bot Flow
+          inputText:
+            noValue: true
+          exitReason:
+            noValue: true
+          intent:
+            noValue: true
+          botFlow:
+            '{{bot_flow_name}}':
+              ver_latestPublished:
+                inputs:
+                  Slot.OrderNumberType:
+                    noValue: true
+                outputs:
+                  Slot.OrderNumberType:
+                    noValue: true
+      - disconnect:
+          name: End example call
