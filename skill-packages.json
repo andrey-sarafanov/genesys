@@ -1,0 +1,26 @@
+{
+  "packaged_on": "2026-11-10",
+  "skills": [
+    {
+      "name": "genesys-reporting",
+      "archive": "genesys-reporting.zip",
+      "file_count": 8,
+      "bytes": 19961,
+      "sha256": "d0db2b4aae44d96bcdae5e0e4654bc1aff6ebe08d6d4d99d90fba1695f284a0c"
+    },
+    {
+      "name": "genesys-cx-as-code",
+      "archive": "genesys-cx-as-code.zip",
+      "file_count": 21,
+      "bytes": 29739,
+      "sha256": "26ebb74edde53d873e78cc3594abb44922fbcf885f74e6abfb7d8e21f61e8b14"
+    },
+    {
+      "name": "genesys-performance-investigator",
+      "archive": "genesys-performance-investigator.zip",
+      "file_count": 11,
+      "bytes": 33451,
+      "sha256": "faa07d37d9adb66c4dc5b0e45138485f7254ce90ca76e42c97f8447c0c9fb3d7"
+    }
+  ]
+}
